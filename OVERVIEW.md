@@ -29,4 +29,5 @@
 - TypeScript `tsc --noEmit`：通过。
 - TypeScript build：通过。
 - `git diff --check`：通过。
+- 已配置 WorkBuddy 自定义 MCP：固定 Node 运行时指向 `dist/index.js`，密钥仅作为 MCP 进程环境变量保存；配置 JSON 校验通过，原有 7 个 MCP 保持不变。
 - 后续进入发布前门禁：依赖漏洞与许可证扫描、npm pack 内容检查、README 与 CHANGELOG 完善，以及真实上游契约的定期复核。
