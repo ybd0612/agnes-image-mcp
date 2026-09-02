@@ -1,0 +1,170 @@
+# Agnes Image MCP 架构设计
+
+> 📚 **本文档隶属 [文档总纲](README.md)** — 关键事实以总纲 §2 SSOT 为准；修改本文档须遵守总纲 §3 同步铁律。
+
+## 1. 目录规划
+
+```text
+agnes-image-mcp/
+├── src/
+│   ├── index.ts                 # stdio 启动入口
+│   ├── server.ts                # MCP Server 与工具注册
+│   ├── config.ts                # 环境变量与默认值
+│   ├── errors.ts                # 统一错误码与错误信封
+│   ├── schemas/
+│   │   ├── generate-image.ts    # 单图参数 schema
+│   │   ├── generate-images.ts   # 批量参数 schema
+│   │   ├── download-image.ts    # 下载参数 schema
+│   │   └── validate-image.ts    # 校验参数 schema
+│   ├── providers/
+│   │   ├── image-provider.ts    # Provider 接口
+│   │   └── agnes-provider.ts    # Agnes API 实现
+│   ├── services/
+│   │   ├── image-service.ts     # 业务编排与结果标准化
+│   │   ├── batch-service.ts     # 批量执行与部分失败
+│   │   ├── download-service.ts  # HTTPS URL 下载
+│   │   └── validation-service.ts# 图片格式/尺寸/大小校验
+│   ├── infra/
+│   │   ├── rate-limiter.ts      # 按 size 分桶限流
+│   │   ├── retry.ts             # 指数退避与 Retry-After
+│   │   └── http-client.ts       # 超时、响应和敏感信息处理
+│   └── types/
+│       └── image.ts             # 公共请求/响应类型
+├── tests/
+│   ├── unit/
+│   ├── integration/
+│   └── fixtures/
+├── docs/
+│   ├── ARCHITECTURE.md
+│   ├── API.md
+│   ├── SECURITY.md
+│   ├── CONTRIBUTING.md
+│   └── RELEASE.md
+├── .env.example
+├── .gitignore
+├── LICENSE
+├── package.json
+├── tsconfig.json
+├── README.md
+└── PROJECT_PLAN.md
+```
+
+## 2. 模块职责
+
+- `server.ts`：只负责 MCP 工具注册和协议响应，不放 Agnes HTTP 细节。
+- `schemas/`：校验调用方输入，拒绝未知危险字段和非法枚举。
+- `image-provider.ts`：定义与供应商无关的图片能力接口。
+- `agnes-provider.ts`：构造 Agnes 官方请求，确保 `response_format` 放在 `extra_body`，图像输入放在 `extra_body.image`。
+- `rate-limiter.ts`：按 `size` 维护免费版 default RPM 桶。
+- `retry.ts`：只对网络错误、超时和 429 等可恢复错误重试。
+- `download-service.ts`：只在调用方明确提供路径时落盘，负责 SSRF、重定向和路径安全。
+- `validation-service.ts`：第一版仅验证沙箱内本地文件是否为可读取图片，并返回元数据。
+- `services/`：将底层结果转换为稳定的 MCP 返回格式。
+
+## 3. 公共接口模型
+
+```ts
+interface ImageGenerationRequest {
+  prompt: string;
+  size: '1K' | '2K' | '3K' | '4K';
+  ratio?: '1:1' | '3:4' | '4:3' | '16:9' | '9:16' | '2:3' | '3:2' | '21:9';
+  model?: string;
+  images?: string[];
+  output?: 'url' | 'base64';
+}
+
+interface ImageGenerationResult {
+  success: boolean;
+  provider: 'agnes';
+  model: string;
+  url?: string;
+  base64?: string;
+  revisedPrompt?: string | null;
+  created?: number;
+}
+```
+
+调用方参数使用 `images` 和 `output`，Provider 内部再映射为 Agnes 的 `extra_body.image`、`extra_body.response_format` 或 `return_base64`。
+
+## 4. Agnes 请求映射
+
+### 文生图 URL
+
+```json
+{
+  "model": "agnes-image-2.5-flash",
+  "prompt": "...",
+  "size": "1K",
+  "ratio": "9:16",
+  "extra_body": { "response_format": "url" }
+}
+```
+
+### 图生图/多图合成
+
+```json
+{
+  "model": "agnes-image-2.5-flash",
+  "prompt": "...",
+  "size": "1K",
+  "extra_body": {
+    "image": ["https://..."],
+    "response_format": "url"
+  }
+}
+```
+
+## 5. 限流与重试
+
+免费版 `default` 实际 RPM：
+
+- 1K：20 RPM，间隔 3 秒；
+- 2K：10 RPM，间隔 6 秒；
+- 3K：1 RPM，间隔 60 秒；
+- 4K：1 RPM，间隔 60 秒。
+
+第一版默认单进程串行。`generate_images` 中每个任务先通过对应档位的 limiter，再执行 Provider。收到 429 时优先使用 `Retry-After`；没有该响应头时采用有上限的指数退避。必须明确说明：多 MCP 进程或多机器无法共享此内存限流状态。
+
+## 6. 调用时序
+
+```text
+MCP Client
+  → server：调用 generate_image
+  → schema：校验参数
+  → service：标准化请求
+  → limiter：等待 size 档位
+  → retry：执行可恢复重试
+  → provider：构造 Agnes 请求
+  → Agnes API：返回 URL 或 Base64
+  → service：标准化结果
+  → server：返回 MCP 响应
+```
+
+## 7. 安全边界
+
+- API Key 只从运行环境读取，绝不出现在工具参数、返回值、日志或异常中。
+- `stdio` stdout 只输出 MCP 协议消息，日志必须输出 stderr。
+- 下载器限制 HTTPS、响应大小、重定向次数和目标路径。
+- 拒绝 `file://`、内网地址、环回地址、云元数据地址和明显系统目录。
+- 不默认覆盖文件，不递归删除，不自动清理目录。
+- 不提交 `.env`、真实 API 响应、真实图片和带密钥的日志。
+- 明确声明 Agnes API 使用须遵守 Agnes 官方条款和内容政策。
+
+## 8. 实施顺序
+
+```text
+1. 初始化 TypeScript + MCP stdio 骨架
+2. 定义公共类型、schema 和错误模型
+3. 实现 Agnes Provider 与请求映射
+4. 实现按 size 分桶的 RPM limiter
+5. 实现 retry、超时和错误分类
+6. 实现 generate_image
+7. 实现批量 generate_images
+8. 实现 download_image 与路径/SSRF 防护
+9. 实现 validate_image
+10. 添加 mock 测试、集成测试和 CLI 冒烟测试
+11. 编写 README、安全、贡献和发布文档
+12. 执行开源发布门禁
+```
+
+依赖关系：1 → 2 → 3 → 4/5 → 6 → 7；8/9 可在 2 后并行；10 依赖 6/7/8/9；11/12 依赖全部功能和测试。

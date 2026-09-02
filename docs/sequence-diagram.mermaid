@@ -1,0 +1,21 @@
+sequenceDiagram
+    participant C as MCP Client
+    participant S as MCP Server
+    participant V as Schema Validator
+    participant L as RPM Limiter
+    participant R as Retry Policy
+    participant P as Agnes Provider
+    participant A as Agnes API
+
+    C->>S: call generate_image
+    S->>V: validate request
+    V-->>S: normalized request
+    S->>L: acquire token by size
+    L-->>S: permit
+    S->>R: execute with retry policy
+    R->>P: generate(request)
+    P->>A: POST /v1/images/generations
+    A-->>P: URL or Base64 response
+    P-->>R: normalized provider result
+    R-->>S: result or typed error
+    S-->>C: MCP JSON envelope

@@ -1,0 +1,4 @@
+export type ErrorCode = 'INVALID_ARGUMENT' | 'MISSING_API_KEY' | 'UNSUPPORTED_MODEL' | 'UNSUPPORTED_SIZE' | 'UNSUPPORTED_RATIO' | 'MISSING_REFERENCE_IMAGE' | 'UPSTREAM_AUTH_ERROR' | 'UPSTREAM_RATE_LIMIT' | 'UPSTREAM_TIMEOUT' | 'UPSTREAM_BAD_RESPONSE' | 'IMAGE_DOWNLOAD_FAILED' | 'IMAGE_TOO_LARGE' | 'INVALID_IMAGE' | 'PATH_NOT_ALLOWED' | 'FILE_WRITE_FAILED' | 'VALIDATION_FAILED';
+export class AppError extends Error { constructor(public readonly code: ErrorCode, message: string, public readonly details?: unknown) { super(message); this.name = 'AppError'; } }
+export function asAppError(error: unknown): AppError { if (error instanceof AppError) return error; return new AppError('UPSTREAM_BAD_RESPONSE', error instanceof Error ? error.message : '请求失败'); }
+export function envelopeError(error: unknown) { const e = asAppError(error); return { code: e.code, message: e.message, data: null }; }

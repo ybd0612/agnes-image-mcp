@@ -1,0 +1,35 @@
+classDiagram
+    class ImageProvider {
+      <<interface>>
+      +generate(request) Promise~ImageGenerationResult~
+    }
+    class AgnesProvider {
+      -config
+      -httpClient
+      +generate(request) Promise~ImageGenerationResult~
+    }
+    class ImageService {
+      -provider
+      -limiter
+      -retryPolicy
+      +generateImage(request)
+      +generateImages(request)
+    }
+    class DownloadService {
+      +download(source, outputPath)
+    }
+    class ValidationService {
+      +validate(source)
+    }
+    class RateLimiter {
+      +acquire(size)
+    }
+    class RetryPolicy {
+      +execute(operation)
+    }
+    ImageProvider <|.. AgnesProvider
+    ImageService --> ImageProvider
+    ImageService --> RateLimiter
+    ImageService --> RetryPolicy
+    DownloadService --> ValidationService
+    AgnesProvider --> RateLimiter
