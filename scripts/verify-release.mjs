@@ -24,10 +24,12 @@ try {
   if (!existsSync(path.join(projectRoot, binPath))) throw new Error(`${binPath} does not exist; build before verification`);
 
   const source = readFileSync(path.join(projectRoot, 'src', 'server.ts'), 'utf8');
-  const matches = [...source.matchAll(/new McpServer\(\s*\{[\s\S]*?version:\s*['"]([^'"]+)['"]/g)];
-  if (matches.length !== 1) throw new Error('expected exactly one static MCP server version in src/server.ts');
-  const serverVersion = matches[0][1];
-  if (serverVersion !== version) throw new Error(`MCP server version ${serverVersion} differs from package version ${version}`);
+  const serverVersionMatches = [...source.matchAll(/new McpServer\(\s*\{[\s\S]*?version:\s*([^,}]+)[,}]/g)];
+  if (serverVersionMatches.length !== 1) throw new Error('expected exactly one MCP server version in src/server.ts');
+  const serverVersionExpression = serverVersionMatches[0][1].trim();
+  if (serverVersionExpression !== 'packageJson.version') {
+    throw new Error(`MCP server version must use packageJson.version, got ${serverVersionExpression}`);
+  }
 
   console.log(`verify-release passed: version ${version}, bin ${binPath}, MCP version aligned`);
 } catch (error) {
