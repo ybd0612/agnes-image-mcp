@@ -33,4 +33,5 @@
 - 发布改造已完成：npm `files` 白名单、Node >=20、`prepack`、CHANGELOG、CI Node 20/22、npm audit high、pack-check、stdio smoke 和版本校验均已加入。
 - 发布门禁实测通过：`npm test`（7 文件、21 测试）、typecheck、build、verify-release、pack-check（21 文件）、smoke（4 工具）和 npm pack 清单检查。
 - 发布门禁中的 Vitest 依赖已固定为 `vite=8.2.2`、`vitest=4.0.8`；原生 Windows 命令复核全部通过。Bash shim 曾出现 collector 超时/配置异常，发布前应以原生 Windows 或 GitHub CI 结果为准。
+- 已补齐 clean-install tarball 冒烟与 tag 发布工作流：`smoke:tarball` 从 npm tgz 安装后验证 4 个工具，`.github/workflows/publish.yml` 仅 tag/手动触发并要求 NPM_TOKEN，未包含真实凭据。
 - 后续仅待确认 npm 包名可用、GitHub owner/repo、npm 账号及 Trusted Publisher；当前未 push、未创建远程仓库、未 npm publish。

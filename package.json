@@ -24,8 +24,9 @@
     "typecheck": "tsc --noEmit",
     "pack-check": "node scripts/check-pack.mjs",
     "smoke": "node scripts/smoke-stdio.mjs",
+    "smoke:tarball": "node scripts/smoke-tarball.mjs",
     "verify-release": "node scripts/verify-release.mjs",
-    "prepublishOnly": "npm run typecheck && npm test && npm run build && npm run verify-release && npm run pack-check && npm run smoke"
+    "prepublishOnly": "npm run typecheck && npm test && npm run build && npm run verify-release && npm run pack-check && npm run smoke && npm run smoke:tarball"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
