@@ -12,7 +12,7 @@ const npmArgs = isWindows && npmCliPath
   : isWindows
     ? ['/d', '/s', '/c', 'npm.cmd pack --dry-run --json']
     : ['pack', '--dry-run', '--json'];
-const allowedFiles = new Set(['package.json', 'README.md', 'LICENSE', 'CHANGELOG.md']);
+const allowedFiles = new Set(['package.json', 'README.md', 'README.zh-CN.md', 'LICENSE', 'CHANGELOG.md']);
 const forbiddenSegments = new Set([
   'src',
   'tests',

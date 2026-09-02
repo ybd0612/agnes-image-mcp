@@ -4,7 +4,7 @@
 
 ## Install and run
 
-Before publishing or installing, verify that the npm package name `agnes-image-mcp` is available in your registry and that the requested version has been published. The commands below assume that package name is available.
+The package is published on npm as `agnes-image-mcp`. Use `@latest` for the current stable release, or pin a published version for reproducible deployments.
 
 Install the latest published version globally:
 
@@ -22,7 +22,7 @@ AGNES_API_KEY=your-key npx --yes agnes-image-mcp@latest
 For reproducible deployments, pin the version explicitly:
 
 ```bash
-AGNES_API_KEY=your-key npx --yes agnes-image-mcp@0.1.0
+AGNES_API_KEY=your-key npx --yes agnes-image-mcp@0.1.7
 ```
 
 The package is an MCP **stdio** server. It does not open an HTTP listener and does not make an API request until an MCP tool is called.
@@ -48,7 +48,7 @@ Add a server entry to the MCP client configuration format supported by your clie
   "mcpServers": {
     "agnes-image": {
       "command": "npx",
-      "args": ["--yes", "agnes-image-mcp@0.1.0"],
+      "args": ["--yes", "agnes-image-mcp@latest"],
       "env": {
         "AGNES_API_KEY": "${AGNES_API_KEY}",
         "AGNES_MODEL": "agnes-image-2.5-flash"
@@ -67,7 +67,7 @@ Bash (Linux/macOS, current shell only):
 ```bash
 export AGNES_API_KEY='your-key'
 export AGNES_MODEL='agnes-image-2.5-flash' # optional
-npx --yes agnes-image-mcp@0.1.0
+npx --yes agnes-image-mcp@0.1.7
 ```
 
 PowerShell (Windows, current session only):
@@ -75,7 +75,7 @@ PowerShell (Windows, current session only):
 ```powershell
 $env:AGNES_API_KEY = 'your-key'
 $env:AGNES_MODEL = 'agnes-image-2.5-flash' # optional
-npx --yes agnes-image-mcp@0.1.0
+npx --yes agnes-image-mcp@0.1.7
 ```
 
 ## Available tools
@@ -116,7 +116,7 @@ npm run build
 npm pack --dry-run
 ```
 
-`npm pack --dry-run` runs the `prepack` hook, builds `dist/`, and previews the exact package contents without publishing. The package allowlist contains only `dist`, `README.md`, `LICENSE`, and `CHANGELOG.md`; source, tests, secrets, and `node_modules` are excluded.
+`npm pack --dry-run` runs the `prepack` hook, builds `dist/`, and previews the exact package contents without publishing. The package allowlist contains `dist`, `README.md`, `LICENSE`, and `CHANGELOG.md`; npm also always includes `package.json`. Source, tests, secrets, and `node_modules` are excluded.
 
 ## License
 

@@ -19,6 +19,7 @@
 - Windows、macOS、Linux 路径行为至少完成静态检查；
 - npm lockfile 与 package.json 一致；
 - `npm pack --dry-run` 不包含密钥、真实素材和测试私密数据；
+- npm 包内容检查与 tarball clean-install 冒烟测试通过；
 - 依赖许可证和漏洞扫描通过；
 - 版本号、CHANGELOG 和 Node.js 版本要求明确。
 
@@ -34,12 +35,12 @@
 
 ## 本地发布前操作顺序
 
-1. 确认 npm 包名 `agnes-image-mcp` 可用：`npm view agnes-image-mcp version`；
-2. 确认 GitHub 仓库 owner/repo 后，再补充 package.json 的 repository、homepage、bugs 和 README 链接；
-3. 在本地执行：`npm ci`、`npm test`、`npm run typecheck`、`npm run build`、`npm run verify-release`、`npm run pack-check`、`npm run smoke`；
+1. 确认当前 npm 版本：`npm view agnes-image-mcp version --registry=https://registry.npmjs.org`；
+2. 确认 `package.json.repository.url` 与 GitHub 仓库匹配；
+3. 在本地执行：`npm ci`、`npm test`、`npm run typecheck`、`npm run build`、`npm run verify-release`、`npm run pack-check`、`npm run smoke`、`npm run smoke:tarball`；
 4. 检查 `npm pack --dry-run` 仅包含必要文件；
-5. 创建并推送版本标签，例如 `git tag v0.1.0`、`git push origin v0.1.0`；
-6. 登录 npm 并执行 `npm publish --access public`，或配置 Trusted Publisher 后通过 CI 发布；
-7. 发布后验证：`npx -y agnes-image-mcp@0.1.0`，并在 MCP 客户端中配置 `AGNES_API_KEY`。
+5. 修改版本后推送标签，例如 `npm version patch`、`git push origin master --tags`；
+6. 使用已配置的 npm Trusted Publisher，由 GitHub Actions 自动发布到 npm；
+7. 发布后验证：`npm view agnes-image-mcp version --registry=https://registry.npmjs.org`，并使用 `npx -y agnes-image-mcp@latest` 测试。
 
-首次发布建议使用 `0.1.0` 并标注实验性 API；发生破坏性变更时使用 major 版本并更新迁移说明。当前不会自动创建 GitHub 仓库、推送或执行 npm publish。
+当前已发布版本为 `0.1.7`。发生破坏性变更时使用 major 版本并更新迁移说明。

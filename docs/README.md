@@ -17,6 +17,8 @@
 | `SECURITY.md` | 凭据、路径、SSRF、发布边界 | 实现基线 | 🟢一致 | 高 |
 | `QA_PLAN.md` | 测试矩阵与质量门禁 | 发布门禁 | 🟢一致 | 中 |
 | `RELEASE.md` | GitHub/npm 开源发布清单 | 发布门禁 | 🟢一致 | 中 |
+
+> 当前 npm 已发布版本：`0.1.7`；发布方式为 GitHub Actions npm Trusted Publishing（OIDC）。
 | `CONTRIBUTING.md` | 贡献约定 | 发布准备 | 🟢一致 | 中 |
 
 ### 仓库级共用文档
