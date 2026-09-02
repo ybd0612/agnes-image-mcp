@@ -30,7 +30,9 @@
 - 发布门禁中的 Vitest 依赖已固定为 `vite=8.2.2`、`vitest=4.0.8`；原生 Windows 命令复核全部通过。
 - 已补齐 clean-install tarball 冒烟与 tag 发布工作流：`smoke:tarball` 从 npm tgz 安装后验证 4 个工具，`.github/workflows/publish.yml` 仅 tag/手动触发并要求 NPM_TOKEN，未包含真实凭据。
 - 已配置 GitHub remote `git@github.com:ybd0612/agnes-image-mcp.git`，并成功推送 `master` 至 `origin/master`。
-- npm 默认源仍为 `https://registry.npmmirror.com`；官方 npmjs 尚未登录。发布时应显式使用 `--registry=https://registry.npmjs.org`，当前未执行 npm publish。
+- npm 默认源仍为 `https://registry.npmmirror.com`；官方 npmjs 尚未登录。发布改为 Trusted Publishing，不再依赖 `NPM_TOKEN`。
+- `.github/workflows/publish.yml` 已切换到 GitHub OIDC：Node 24、`setup-node@v6`、关闭缓存、`npm publish --access public --provenance`；`package.json.repository.url` 已匹配 GitHub 仓库。
+- Trusted Publisher 配置需要在 npm 包设置中填写用户 `ybd0612`、仓库 `agnes-image-mcp`、工作流文件 `publish.yml`，允许 `npm publish`。
 
 ## 下一步
 
