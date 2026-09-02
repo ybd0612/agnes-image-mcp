@@ -11,7 +11,7 @@
 ## 验证与遗留
 
 - `tsc --noEmit`：通过。
-- Vitest：已升级至 4.1.11，完整测试通过（3 个文件、10 个测试）。
+- Vitest：固定至 4.0.8，完整测试通过（7 个文件、21 个测试）。
 - TypeScript：`tsc --noEmit` 通过。
 - 项目已初始化 Git；`.neuralmemory/`、`.workbuddy/`、`node_modules/` 均已加入忽略，不会提交。
 - 本轮使用用户临时注入的 `AGNES_API_KEY` 发起一次最小真实请求：成功返回 1 张 URL 图片；未记录密钥、图片 URL 或请求内容。
@@ -25,7 +25,7 @@
 
 ## 验证与后续
 
-- Vitest 4.1.11：7 个测试文件、21 个测试通过。
+- Vitest 4.0.8：7 个测试文件、21 个测试通过；固定版本以避免 4.1.11 在独立环境中的 collector 兼容问题。
 - TypeScript `tsc --noEmit`：通过。
 - TypeScript build：通过。
 - `git diff --check`：通过。
