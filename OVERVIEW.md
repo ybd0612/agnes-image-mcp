@@ -23,15 +23,15 @@
 - 第二批契约统一：可恢复错误重试、单图返回、批量 `id` 与 skipped 统计、`INVALID_IMAGE` 错误码、网络错误分类。
 - 第三批 MCP 体验：`registerTool`、`outputSchema`、`structuredContent`、工具描述与 annotations、SIGINT/SIGTERM 优雅退出。
 
-## 验证与后续
+## 发布进展
 
-- Vitest 4.0.8：7 个测试文件、21 个测试通过；固定版本以避免 4.1.11 在独立环境中的 collector 兼容问题。
-- TypeScript `tsc --noEmit`：通过。
-- TypeScript build：通过。
-- `git diff --check`：通过。
-- 已配置 WorkBuddy 自定义 MCP：固定 Node 运行时指向 `dist/index.js`，密钥仅作为 MCP 进程环境变量保存；配置 JSON 校验通过，原有 7 个 MCP 保持不变。
 - 发布改造已完成：npm `files` 白名单、Node >=20、`prepack`、CHANGELOG、CI Node 20/22、npm audit high、pack-check、stdio smoke 和版本校验均已加入。
 - 发布门禁实测通过：`npm test`（7 文件、21 测试）、typecheck、build、verify-release、pack-check（21 文件）、smoke（4 工具）和 npm pack 清单检查。
-- 发布门禁中的 Vitest 依赖已固定为 `vite=8.2.2`、`vitest=4.0.8`；原生 Windows 命令复核全部通过。Bash shim 曾出现 collector 超时/配置异常，发布前应以原生 Windows 或 GitHub CI 结果为准。
+- 发布门禁中的 Vitest 依赖已固定为 `vite=8.2.2`、`vitest=4.0.8`；原生 Windows 命令复核全部通过。
 - 已补齐 clean-install tarball 冒烟与 tag 发布工作流：`smoke:tarball` 从 npm tgz 安装后验证 4 个工具，`.github/workflows/publish.yml` 仅 tag/手动触发并要求 NPM_TOKEN，未包含真实凭据。
-- 后续仅待确认 npm 包名可用、GitHub owner/repo、npm 账号及 Trusted Publisher；当前未 push、未创建远程仓库、未 npm publish。
+- 已配置 GitHub remote `git@github.com:ybd0612/agnes-image-mcp.git`，并成功推送 `master` 至 `origin/master`。
+- npm 默认源仍为 `https://registry.npmmirror.com`；官方 npmjs 尚未登录。发布时应显式使用 `--registry=https://registry.npmjs.org`，当前未执行 npm publish。
+
+## 下一步
+
+完成官方 npm 登录和 `npm whoami --registry=https://registry.npmjs.org` 核验后，再执行发布前检查与 `npm publish --access public --registry=https://registry.npmjs.org`。
