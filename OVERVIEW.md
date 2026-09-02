@@ -15,6 +15,7 @@
 - TypeScript：`tsc --noEmit` 通过。
 - 项目已初始化 Git；`.neuralmemory/`、`.workbuddy/`、`node_modules/` 均已加入忽略，不会提交。
 - 当前 shell 会话未读取到 `AGNES_API_KEY`（显示 missing），因此本轮未调用真实 Agnes API，仅执行 mock 测试。
+- 提交：`56089f4 修复测试环境并收敛项目依赖`。
 
 ## 下一步
 
