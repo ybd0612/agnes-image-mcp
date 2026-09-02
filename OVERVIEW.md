@@ -14,7 +14,7 @@
 - Vitest：已升级至 4.1.11，完整测试通过（3 个文件、10 个测试）。
 - TypeScript：`tsc --noEmit` 通过。
 - 项目已初始化 Git；`.neuralmemory/`、`.workbuddy/`、`node_modules/` 均已加入忽略，不会提交。
-- 当前 shell 会话未读取到 `AGNES_API_KEY`（显示 missing），因此本轮未调用真实 Agnes API，仅执行 mock 测试。
+- 本轮使用用户临时注入的 `AGNES_API_KEY` 发起一次最小真实请求：成功返回 1 张 URL 图片；未记录密钥、图片 URL 或请求内容。
 - 提交：`56089f4 修复测试环境并收敛项目依赖`、`fad3050 更新验证结果概览`。
 
 ## 下一步
