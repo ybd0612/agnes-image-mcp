@@ -33,6 +33,7 @@
 - npm 默认源仍为 `https://registry.npmmirror.com`；官方发布已通过 Trusted Publishing 完成，不依赖 `NPM_TOKEN`。
 - v0.1.3/v0.1.4 曾因审计步骤与旧标签代码失败；随后修复生产依赖审计、构建顺序和动态版本校验，并在 GitHub Actions 手动运行最新 master 成功发布 `0.1.7`。
 - npm 官方当前版本：`0.1.7`，latest dist-tag 为 `0.1.7`；后续版本应升级 package.json 版本并推送对应 `v*` 标签触发 Publish。
+- 英文和中文 README 已互相添加语言切换链接，入口分别为 `README.md` 与 `README.zh-CN.md`。
 - `.github/workflows/publish.yml` 已切换到 GitHub OIDC：Node 24、`setup-node@v6`、关闭缓存、`npm publish --access public --provenance`；`package.json.repository.url` 已匹配 GitHub 仓库。
 - Trusted Publisher 配置需要在 npm 包设置中填写用户 `ybd0612`、仓库 `agnes-image-mcp`、工作流文件 `publish.yml`，允许 `npm publish`。
 

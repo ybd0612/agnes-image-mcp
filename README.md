@@ -1,5 +1,7 @@
 # agnes-image-mcp
 
+语言：**English** · [简体中文](README.zh-CN.md)
+
 `agnes-image-mcp` is a Model Context Protocol (MCP) stdio server that exposes Agnes image generation and local image utilities to MCP-compatible clients. It is distributed as an npm package and requires Node.js 20 or newer.
 
 ## Install and run

@@ -1,5 +1,7 @@
 # agnes-image-mcp
 
+Language: [English](README.md) · **简体中文**
+
 `agnes-image-mcp` 是一个基于 Model Context Protocol（MCP）stdio 的图片服务，为兼容 MCP 的客户端提供 Agnes 图片生成和本地图片工具。项目已发布到 npm，要求 Node.js 20 或更高版本。
 
 ## 安装与运行
