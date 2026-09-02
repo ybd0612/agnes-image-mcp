@@ -7,11 +7,25 @@
   "bin": {
     "agnes-image-mcp": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "prepack": "npm run build",
     "start": "node dist/index.js",
-    "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "test": "vitest run --config vitest.config.ts",
+    "typecheck": "tsc --noEmit",
+    "pack-check": "node scripts/check-pack.mjs",
+    "smoke": "node scripts/smoke-stdio.mjs",
+    "verify-release": "node scripts/verify-release.mjs",
+    "prepublishOnly": "npm run typecheck && npm test && npm run build && npm run verify-release && npm run pack-check && npm run smoke"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",

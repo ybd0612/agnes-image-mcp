@@ -30,4 +30,6 @@
 - TypeScript build：通过。
 - `git diff --check`：通过。
 - 已配置 WorkBuddy 自定义 MCP：固定 Node 运行时指向 `dist/index.js`，密钥仅作为 MCP 进程环境变量保存；配置 JSON 校验通过，原有 7 个 MCP 保持不变。
-- 后续进入发布前门禁：依赖漏洞与许可证扫描、npm pack 内容检查、README 与 CHANGELOG 完善，以及真实上游契约的定期复核。
+- 发布改造已完成：npm `files` 白名单、Node >=20、`prepack`、CHANGELOG、CI Node 20/22、npm audit high、pack-check、stdio smoke 和版本校验均已加入。
+- 发布门禁实测通过：`npm test`（7 文件、21 测试）、typecheck、build、verify-release、pack-check（21 文件）、smoke（4 工具）和 npm pack 清单检查。
+- 后续仅待确认 npm 包名可用、GitHub owner/repo、npm 账号及 Trusted Publisher；当前未 push、未创建远程仓库、未 npm publish。

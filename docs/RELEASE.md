@@ -1,4 +1,4 @@
-# GitHub 开源发布清单（规划）
+# GitHub / npm 开源发布清单
 
 > 📚 **本文档隶属 [文档总纲](README.md)** — 关键事实以总纲 §2 SSOT 为准；修改本文档须遵守总纲 §3 同步铁律。
 
@@ -32,9 +32,14 @@
 - 明确 MIT 不代表 Agnes API 或模型输出授权；
 - 提供贡献指南和安全问题报告入口。
 
-## 首次发布建议
+## 本地发布前操作顺序
 
-1. 先发布 `0.1.0`，标注实验性 API；
-2. 收集至少一个 `dsp` 和一个非视频项目的接入反馈；
-3. 工具 schema 稳定后再发布 `1.0.0`；
-4. 发生破坏性变更时使用 major 版本并更新迁移说明。
+1. 确认 npm 包名 `agnes-image-mcp` 可用：`npm view agnes-image-mcp version`；
+2. 确认 GitHub 仓库 owner/repo 后，再补充 package.json 的 repository、homepage、bugs 和 README 链接；
+3. 在本地执行：`npm ci`、`npm test`、`npm run typecheck`、`npm run build`、`npm run verify-release`、`npm run pack-check`、`npm run smoke`；
+4. 检查 `npm pack --dry-run` 仅包含必要文件；
+5. 创建并推送版本标签，例如 `git tag v0.1.0`、`git push origin v0.1.0`；
+6. 登录 npm 并执行 `npm publish --access public`，或配置 Trusted Publisher 后通过 CI 发布；
+7. 发布后验证：`npx -y agnes-image-mcp@0.1.0`，并在 MCP 客户端中配置 `AGNES_API_KEY`。
+
+首次发布建议使用 `0.1.0` 并标注实验性 API；发生破坏性变更时使用 major 版本并更新迁移说明。当前不会自动创建 GitHub 仓库、推送或执行 npm publish。

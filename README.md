@@ -1,57 +1,123 @@
 # agnes-image-mcp
 
-> 当前状态：第一版源码已实现，安全底座、契约统一和 MCP 体验优化均已完成；测试与类型检查通过。
->
-> 关键事实统一以 [`docs/README.md`](docs/README.md) 的 SSOT 与 [`docs/DECISIONS.md`](docs/DECISIONS.md) 为准。
+`agnes-image-mcp` is a Model Context Protocol (MCP) stdio server that exposes Agnes image generation and local image utilities to MCP-compatible clients. It is distributed as an npm package and requires Node.js 20 or newer.
 
-一个面向多个项目和 AI Agent 的 Agnes Image 通用 MCP 服务，目标是通过 MCP stdio 统一提供图片生成、批量生成、下载和校验能力。
+## Install and run
 
-## 当前决策
+Before publishing or installing, verify that the npm package name `agnes-image-mcp` is available in your registry and that the requested version has been published. The commands below assume that package name is available.
 
-- TypeScript
-- MCP stdio
-- MIT License
-- Node.js 20+
-- 默认模型：`agnes-image-2.5-flash`
-- 服务运行配置：`AGNES_API_KEY`、可选 `AGNES_MODEL`
-- 第一版工具：`generate_image`、`generate_images`、`download_image`、`validate_image`
+Install the latest published version globally:
 
-## 项目边界
-
-本项目只负责通用图片能力：
-
-```text
-MCP 请求
-→ 参数校验
-→ Agnes API 调用
-→ 限流 / 重试 / 错误标准化
-→ URL / Base64 结果
-→ 可选下载和图片校验
+```bash
+npm install --global agnes-image-mcp@latest
+AGNES_API_KEY=your-key agnes-image-mcp
 ```
 
-不负责故事 JSON、TTS、字幕、视频渲染、业务项目文件修改或数据库持久化。
+Run without a global install:
 
-## 文档导航
+```bash
+AGNES_API_KEY=your-key npx --yes agnes-image-mcp@latest
+```
 
-| 文档 | 内容 |
-|---|---|
-| `PROJECT_PLAN.md` | 产品范围、官方接口基线、RPM、版本规划 |
-| `docs/ARCHITECTURE.md` | 目录结构、模块职责、数据模型、调用时序 |
-| `docs/API.md` | MCP 工具协议和参数设计 |
-| `docs/RATE_LIMITING.md` | 免费版 default RPM 与限流策略 |
-| `docs/SECURITY.md` | API Key、SSRF、路径和开源安全边界 |
-| `docs/QA_PLAN.md` | 测试矩阵与发布门禁 |
-| `docs/CONTRIBUTING.md` | 开源贡献约定（规划） |
-| `docs/RELEASE.md` | GitHub 发布检查清单（规划） |
-| `docs/sequence-diagram.mermaid` | 调用时序图 |
-| `docs/class-diagram.mermaid` | 类与模块关系图 |
+For reproducible deployments, pin the version explicitly:
 
-## 当前实现说明
+```bash
+AGNES_API_KEY=your-key npx --yes agnes-image-mcp@0.1.0
+```
 
-当前版本已包含 TypeScript 源码、MCP stdio 入口、四个工具、安全边界和自动化测试。运行前设置 `AGNES_API_KEY`；可选设置 `AGNES_MODEL` 覆盖默认模型。项目不会自动写入 WorkBuddy MCP 配置，也不会在没有调用方请求时访问 Agnes API。
+The package is an MCP **stdio** server. It does not open an HTTP listener and does not make an API request until an MCP tool is called.
+
+## Configuration
+
+Required environment variable:
+
+- `AGNES_API_KEY`: Agnes API credential. Keep it in the environment or a secret manager; never put it in source code or an MCP JSON file committed to version control.
+
+Optional environment variable:
+
+- `AGNES_MODEL`: default model name. If omitted, the server uses `agnes-image-2.5-flash`.
+
+The repository includes `.env.example` as a reference. The server reads environment variables supplied by its parent process; it does not automatically load a `.env` file.
+
+### Generic MCP client configuration
+
+Add a server entry to the MCP client configuration format supported by your client. The following JSON uses the common `mcpServers` shape:
+
+```json
+{
+  "mcpServers": {
+    "agnes-image": {
+      "command": "npx",
+      "args": ["--yes", "agnes-image-mcp@0.1.0"],
+      "env": {
+        "AGNES_API_KEY": "${AGNES_API_KEY}",
+        "AGNES_MODEL": "agnes-image-2.5-flash"
+      }
+    }
+  }
+}
+```
+
+If your client does not expand `${AGNES_API_KEY}`, replace it at runtime through the client's secret/environment-variable mechanism. For a global install, use `"command": "agnes-image-mcp"` and omit the package argument.
+
+### Shell environment examples
+
+Bash (Linux/macOS, current shell only):
+
+```bash
+export AGNES_API_KEY='your-key'
+export AGNES_MODEL='agnes-image-2.5-flash' # optional
+npx --yes agnes-image-mcp@0.1.0
+```
+
+PowerShell (Windows, current session only):
+
+```powershell
+$env:AGNES_API_KEY = 'your-key'
+$env:AGNES_MODEL = 'agnes-image-2.5-flash' # optional
+npx --yes agnes-image-mcp@0.1.0
+```
+
+## Available tools
+
+All tool calls return a structured envelope with `code`, `message`, and `data` fields. Errors are returned as MCP tool errors with a stable error code and do not expose the API key.
+
+### `generate_image`
+
+Generates one image through the Agnes API. Required inputs are `prompt` and `size`; optional inputs include `model`, `ratio`, `images` (reference image strings), and `output` (`url` or `base64`, default `url`). This is a remote, billable/network operation subject to provider availability and configured rate limiting.
+
+### `generate_images`
+
+Processes 1–10 generation items sequentially (`concurrency` is currently fixed at 1). Each item accepts the same generation fields as `generate_image`; an optional `id` labels results. `continueOnError` defaults to `false` and controls whether later items run after a failure.
+
+### `download_image`
+
+Downloads an image from an HTTPS URL to a relative path beneath the current working directory. It rejects non-HTTPS URLs, private/internal network targets, path traversal, overwriting existing files, unsupported content, and responses over `maxBytes` (10 MiB by default). This tool writes a local file and performs network I/O.
+
+### `validate_image`
+
+Reads a relative local path beneath the current working directory and validates file size and image signature. PNG, JPEG, GIF, and WebP are supported. It does not access the network or modify the file.
+
+## Security and operational boundaries
+
+- Treat `AGNES_API_KEY` as a secret. Do not paste it into prompts, logs, issue reports, or checked-in configuration.
+- The server only performs remote generation when requested by an MCP client. `validate_image` is local-only.
+- Download destinations are constrained to the current working directory, and download URL checks reject insecure schemes and private network access.
+- Image data supplied to generation is sent to the configured Agnes endpoint. Do not send confidential images unless your usage and provider policy allow it.
+- This package provides image capabilities only; it does not create stories, TTS, subtitles, videos, project files, or persistent databases.
+
+## Development
 
 ```bash
 npm install
+npm run typecheck
+npm test
 npm run build
-AGNES_API_KEY=your-key node dist/index.js
+npm pack --dry-run
 ```
+
+`npm pack --dry-run` runs the `prepack` hook, builds `dist/`, and previews the exact package contents without publishing. The package allowlist contains only `dist`, `README.md`, `LICENSE`, and `CHANGELOG.md`; source, tests, secrets, and `node_modules` are excluded.
+
+## License
+
+MIT. See [`LICENSE`](LICENSE).
