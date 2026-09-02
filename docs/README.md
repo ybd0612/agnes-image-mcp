@@ -10,22 +10,22 @@
 
 | 文档 | 管什么 | 阶段 | 状态 | 权威度 |
 |---|---|---|---|---|
-| `DECISIONS.md` | 实施前冻结决策 | 规划 | 🟢一致 | 最高 |
-| `ARCHITECTURE.md` | 模块、类型、时序、安全边界 | 规划 | 🟢一致 | 高 |
-| `API.md` | 四个 MCP 工具协议 | 规划 | 🟢一致 | 高 |
-| `RATE_LIMITING.md` | RPM 与批量限流 | 规划 | 🟢一致 | 高 |
-| `SECURITY.md` | 凭据、路径、SSRF、发布边界 | 规划 | 🟢一致 | 高 |
-| `QA_PLAN.md` | 测试矩阵与质量门禁 | 规划 | 🟢一致 | 中 |
-| `RELEASE.md` | 开源发布清单 | 规划 | 🟢一致 | 中 |
-| `CONTRIBUTING.md` | 贡献约定 | 规划 | 🟢一致 | 中 |
+| `DECISIONS.md` | 实施前冻结决策 | 冻结基线 | 🟢一致 | 最高 |
+| `ARCHITECTURE.md` | 模块、类型、时序、安全边界 | 实现基线 | 🟢一致 | 高 |
+| `API.md` | 四个 MCP 工具协议 | 实现基线 | 🟢一致 | 高 |
+| `RATE_LIMITING.md` | RPM 与批量限流 | 实现基线 | 🟢一致 | 高 |
+| `SECURITY.md` | 凭据、路径、SSRF、发布边界 | 实现基线 | 🟢一致 | 高 |
+| `QA_PLAN.md` | 测试矩阵与质量门禁 | 发布门禁 | 🟢一致 | 中 |
+| `RELEASE.md` | 开源发布清单 | 发布门禁 | 🟢一致 | 中 |
+| `CONTRIBUTING.md` | 贡献约定 | 发布准备 | 🟢一致 | 中 |
 
 ### 仓库级共用文档
 
 | 文档 | 管什么 | 阶段 | 状态 | 权威度 |
 |---|---|---|---|---|
-| `PROJECT_PLAN.md` | 产品范围与实施计划 | 规划 | 🟢一致 | 高 |
-| `README.md` | 项目入口与导航 | 规划 | 🟢一致 | 中 |
-| `OVERVIEW.md` | 本轮规划概览 | 规划 | 🟢一致 | 低 |
+| `PROJECT_PLAN.md` | 产品范围与实施计划 | 实现基线 | 🟢一致 | 高 |
+| `README.md` | 项目入口与导航 | 实现基线 | 🟢一致 | 中 |
+| `OVERVIEW.md` | 本轮实施与审查概览 | 持续记录 | 🟢一致 | 低 |
 
 阅读路径：新人先读 `README.md` → 本文 §2 → `DECISIONS.md`；改代码先读 `DECISIONS.md` → `API.md`/`ARCHITECTURE.md`；发布前读 `QA_PLAN.md` → `SECURITY.md` → `RELEASE.md`。
 
@@ -78,4 +78,4 @@
 
 | 日期 | 变更 | 责任人 |
 |---|---|---|
-| 2026-09-02 | 以 `DECISIONS.md` 为 SSOT，统一字段、工具、尺寸、RPM、批量和文件/网络边界；开始代码前完成文档门禁 | Luna |
+| 2026-09-02 | 以 `DECISIONS.md` 为 SSOT，统一字段、工具、尺寸、RPM、批量和文件/网络边界；完成三批源码与安全优化，测试通过 | Luna |

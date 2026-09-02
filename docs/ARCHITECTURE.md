@@ -150,21 +150,11 @@ MCP Client
 - 不提交 `.env`、真实 API 响应、真实图片和带密钥的日志。
 - 明确声明 Agnes API 使用须遵守 Agnes 官方条款和内容政策。
 
-## 8. 实施顺序
+## 8. 实施状态与后续维护
 
 ```text
-1. 初始化 TypeScript + MCP stdio 骨架
-2. 定义公共类型、schema 和错误模型
-3. 实现 Agnes Provider 与请求映射
-4. 实现按 size 分桶的 RPM limiter
-5. 实现 retry、超时和错误分类
-6. 实现 generate_image
-7. 实现批量 generate_images
-8. 实现 download_image 与路径/SSRF 防护
-9. 实现 validate_image
-10. 添加 mock 测试、集成测试和 CLI 冒烟测试
-11. 编写 README、安全、贡献和发布文档
-12. 执行开源发布门禁
+已完成：TypeScript + MCP stdio 骨架、公共类型/schema/错误模型、Agnes Provider、分桶限流、可恢复重试、四个工具、安全底座、MCP registerTool、outputSchema/structuredContent、优雅退出和自动化测试
+持续维护：依赖升级、真实上游契约复核、发布门禁和安全回归
 ```
 
-依赖关系：1 → 2 → 3 → 4/5 → 6 → 7；8/9 可在 2 后并行；10 依赖 6/7/8/9；11/12 依赖全部功能和测试。
+实现边界以 `docs/DECISIONS.md` 为最高优先级；新增工具或字段必须先更新 SSOT，再同步 API、架构、安全和 QA 文档。

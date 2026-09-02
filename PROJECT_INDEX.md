@@ -2,7 +2,7 @@
 
 > 📚 **本文档隶属 [文档总纲](docs/README.md)** — 关键事实以总纲 §2 SSOT 为准；修改本文档须遵守总纲 §3 同步铁律。
 >
-> 当前状态：文档一致性已完成，源码实现待开始。
+> 当前状态：第一版源码已实现，三批优化已完成，测试与类型检查通过。
 >
 > 本目录用于后续创建独立、可开源、供多个项目使用的 Agnes Image 通用 MCP。
 
@@ -11,13 +11,13 @@
 | 文档 | 类型 | 状态 | 权威内容 |
 |---|---|---|---|
 | `PROJECT_PLAN.md` | 产品与范围 | 已完成初稿 | 项目目标、版本范围、官方接口基线、RPM |
-| `docs/ARCHITECTURE.md` | 架构设计 | 待架构师复核 | 目录、模块、接口、限流、实施依赖 |
-| `docs/API.md` | 协议草案 | 已完成初稿 | 四个 MCP 工具输入输出 |
-| `docs/RATE_LIMITING.md` | 技术专题 | 已完成初稿 | 免费版 default RPM 与限流语义 |
-| `docs/SECURITY.md` | 安全专题 | 已完成初稿 | 凭据、SSRF、路径、开源边界 |
-| `docs/QA_PLAN.md` | QA 规划 | 已完成初稿 | 测试矩阵与发布门禁 |
-| `docs/CONTRIBUTING.md` | 开源协作 | 已完成初稿 | Issue、PR 与贡献约定 |
-| `docs/RELEASE.md` | 发布清单 | 已完成初稿 | GitHub 首次发布门禁 |
+| `docs/ARCHITECTURE.md` | 架构设计 | 实现基线 | 目录、模块、接口、限流、安全边界 |
+| `docs/API.md` | 工具协议 | 实现基线 | 四个 MCP 工具输入输出 |
+| `docs/RATE_LIMITING.md` | 技术专题 | 实现基线 | 免费版 default RPM 与限流语义 |
+| `docs/SECURITY.md` | 安全专题 | 实现基线 | 凭据、SSRF、路径、开源边界 |
+| `docs/QA_PLAN.md` | QA 规划 | 发布门禁 | 测试矩阵与发布门禁 |
+| `docs/CONTRIBUTING.md` | 开源协作 | 发布准备 | Issue、PR 与贡献约定 |
+| `docs/RELEASE.md` | 发布清单 | 发布门禁 | GitHub 首次发布门禁 |
 | `docs/sequence-diagram.mermaid` | 图稿 | 已完成初稿 | 请求调用时序 |
 | `docs/class-diagram.mermaid` | 图稿 | 已完成初稿 | 模块和接口关系 |
 

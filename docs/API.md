@@ -2,7 +2,7 @@
 
 > 📚 **本文档隶属 [文档总纲](README.md)** — 关键事实以总纲 §2 SSOT 为准；修改本文档须遵守总纲 §3 同步铁律。
 >
-> 规划阶段文档，工具协议尚未实现。
+> 当前版本已实现并作为 MCP 工具协议基线；字段和行为以 `docs/DECISIONS.md` 及本文为准。
 
 ## 通用约定
 
@@ -68,7 +68,7 @@ MCP 响应使用 `content: [{ type: "text", text: JSON.stringify(envelope) }]`�
 }
 ```
 
-默认串行、默认 `continueOnError=false`；任一项失败后停止后续项目，并返回已完成项与失败项。显式传入 `true` 才继续处理剩余项目。每次真实上游请求独立获取对应 size 令牌，失败不退款。
+默认串行、默认 `continueOnError=false`；任一项失败后停止后续项目，并返回已完成项与失败项。显式传入 `true` 才继续处理剩余项目。每次真实上游请求独立获取对应 size 令牌，失败不退款。`id` 可选；未提供时结果项省略 `id`。`failedCount` 仅统计已执行失败项，`skippedCount` 统计因停止策略未执行项。
 
 ### 输出
 
@@ -83,7 +83,8 @@ MCP 响应使用 `content: [{ type: "text", text: JSON.stringify(envelope) }]`�
     ],
     "requestedCount": 2,
     "succeededCount": 1,
-    "failedCount": 1
+    "failedCount": 1,
+    "skippedCount": 0
   }
 }
 ```

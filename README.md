@@ -1,6 +1,6 @@
 # agnes-image-mcp
 
-> 当前状态：文档一致性已完成；源码实现尚未开始。
+> 当前状态：第一版源码已实现，安全底座、契约统一和 MCP 体验优化均已完成；测试与类型检查通过。
 >
 > 关键事实统一以 [`docs/README.md`](docs/README.md) 的 SSOT 与 [`docs/DECISIONS.md`](docs/DECISIONS.md) 为准。
 
@@ -46,6 +46,12 @@ MCP 请求
 | `docs/sequence-diagram.mermaid` | 调用时序图 |
 | `docs/class-diagram.mermaid` | 类与模块关系图 |
 
-## 规划阶段说明
+## 当前实现说明
 
-当前不创建源码、不安装依赖、不注册 MCP、不写入 WorkBuddy MCP 配置，也不调用 Agnes API。开始实现前需要再次核对 Agnes 官方接口和依赖版本，并按任务依赖顺序实施。
+当前版本已包含 TypeScript 源码、MCP stdio 入口、四个工具、安全边界和自动化测试。运行前设置 `AGNES_API_KEY`；可选设置 `AGNES_MODEL` 覆盖默认模型。项目不会自动写入 WorkBuddy MCP 配置，也不会在没有调用方请求时访问 Agnes API。
+
+```bash
+npm install
+npm run build
+AGNES_API_KEY=your-key node dist/index.js
+```

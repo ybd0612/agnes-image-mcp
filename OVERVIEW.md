@@ -17,16 +17,16 @@
 - 本轮使用用户临时注入的 `AGNES_API_KEY` 发起一次最小真实请求：成功返回 1 张 URL 图片；未记录密钥、图片 URL 或请求内容。
 - 提交：`56089f4 修复测试环境并收敛项目依赖`、`fad3050 更新验证结果概览`。
 
-## MCP 深度审查结论（2026-09-02）
+## 三批优化完成（2026-09-02）
 
-当前没有确认会阻断 MCP 握手的 P0 协议错误；但发布前应优先处理以下 P1：MCP 暴露 schema 未保持 strict、重试无条件覆盖认证/参数/响应错误、下载缺少 DNS/IP 级 SSRF 防护、路径沙箱未拒绝符号链接、下载响应先完整读入内存且无超时、下载仅信任 Content-Type、上游响应体无大小上限。
+- 第一批安全底座：DNS/IP 级 SSRF、符号链接与 reparse point 防护、下载超时、流式大小限制、Content-Type 与图片魔数校验、上游响应上限。
+- 第二批契约统一：可恢复错误重试、单图返回、批量 `id` 与 skipped 统计、`INVALID_IMAGE` 错误码、网络错误分类。
+- 第三批 MCP 体验：`registerTool`、`outputSchema`、`structuredContent`、工具描述与 annotations、SIGINT/SIGTERM 优雅退出。
 
-P1 还包括：单图返回结构与 API 文档不一致、批量 item.id 必填与文档冲突、stop-on-error 时未执行项统计语义不清、validate_image 错误码与文档不一致、网络错误统一误报为超时。
+## 验证与后续
 
-P2 优化方向：迁移 SDK 的 registerTool、增加 outputSchema/structuredContent、补齐工具描述与 annotations、增加 SIGTERM/SIGINT 生命周期收尾、补齐下载/校验/重试/批量/MCP 入口测试，并清理文档中的“尚未实现”状态描述。
-
-本轮复核：Vitest 4.1.11（3 文件、10 测试）通过，tsc --noEmit 通过；本轮仅审查，未修改业务源码。
-
-## 下一步
-
-按 P1 安全与契约问题完成一轮小范围修复，再补测试和文档同步；真实 API 仅在明确 opt-in 时调用。
+- Vitest 4.1.11：7 个测试文件、21 个测试通过。
+- TypeScript `tsc --noEmit`：通过。
+- TypeScript build：通过。
+- `git diff --check`：通过。
+- 后续进入发布前门禁：依赖漏洞与许可证扫描、npm pack 内容检查、README 与 CHANGELOG 完善，以及真实上游契约的定期复核。
