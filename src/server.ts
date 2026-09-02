@@ -11,6 +11,7 @@ import { generateImageSchema } from './schemas/generate-image.js';
 import { generateImagesSchema } from './schemas/generate-images.js';
 import { downloadImageSchema } from './schemas/download-image.js';
 import { validateImageSchema } from './schemas/validate-image.js';
+import packageJson from '../package.json' with { type: 'json' };
 
 const envelopeSchema = z.object({
   code: z.string(),
@@ -34,7 +35,7 @@ function failure(error: unknown) {
 export function createServer() {
   const config = getConfig();
   const service = new ImageService(new AgnesProvider(config));
-  const server = new McpServer({ name: 'agnes-image-mcp', version: '0.1.0' });
+  const server = new McpServer({ name: 'agnes-image-mcp', version: packageJson.version });
 
   server.registerTool('generate_image', {
     title: '生成图片',

@@ -32,6 +32,7 @@
 - 已配置 GitHub remote `git@github.com:ybd0612/agnes-image-mcp.git`，并成功推送 `master` 至 `origin/master`。
 - npm 默认源仍为 `https://registry.npmmirror.com`；官方 npmjs 尚未登录。发布改为 Trusted Publishing，不再依赖 `NPM_TOKEN`。
 - 发现 v0.1.3/v0.1.4 标签指向审计修复前提交，已补推修复后的 v0.1.5/v0.1.6；当前 npm 仍为 0.1.0，需在 GitHub Actions 页面确认新运行结果。
+- v0.1.3/v0.1.4 的新运行进一步暴露 `verify-release` 在 build 前执行的问题；已将 build 调整到 verify-release 前，并推送包含该修复的 v0.1.7。当前等待 v0.1.7 Actions 运行结果，未再次创建其他标签。
 - `.github/workflows/publish.yml` 已切换到 GitHub OIDC：Node 24、`setup-node@v6`、关闭缓存、`npm publish --access public --provenance`；`package.json.repository.url` 已匹配 GitHub 仓库。
 - Trusted Publisher 配置需要在 npm 包设置中填写用户 `ybd0612`、仓库 `agnes-image-mcp`、工作流文件 `publish.yml`，允许 `npm publish`。
 
