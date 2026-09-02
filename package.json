@@ -4,6 +4,10 @@
   "description": "MCP stdio server for Agnes image generation",
   "type": "module",
   "main": "dist/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ybd0612/agnes-image-mcp.git"
+  },
   "bin": {
     "agnes-image-mcp": "dist/index.js"
   },
