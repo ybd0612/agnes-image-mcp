@@ -20,20 +20,22 @@
 - npm lockfile 与 package.json 一致；
 - `npm pack --dry-run` 不包含密钥、真实素材和测试私密数据；
 - npm 包内容检查与 tarball clean-install 冒烟测试通过；
-- 依赖许可证和漏洞扫描通过；
+- 依赖许可证和漏洞扫描完成（当前仓库未配置自动扫描命令，发布前执行人工检查并记录结果）；
 - 版本号、CHANGELOG 和 Node.js 版本要求明确。
 
 ## 文档发布门禁
 
 - README 安装、配置和 MCP 客户端示例可复现；
 - API、RPM、错误码和安全文档同步；
-- Agnes 官方接口来源和链接有效；
+- Agnes 官方接口来源和链接由维护者在发布前人工复核；
 - 明确免费版 default 限制：1K=20 RPM、2K=10 RPM、3K=1 RPM、4K=1 RPM；
 - 明确限流只覆盖单 MCP 进程；
 - 明确 MIT 不代表 Agnes API 或模型输出授权；
 - 提供贡献指南和安全问题报告入口。
 
 ## 本地发布前操作顺序
+
+> 本仓库当前自动化命令覆盖类型检查、测试、构建、版本校验、包内容检查和 stdio/tarball 冒烟；许可证、漏洞、密钥/隐私内容和官方链接检查目前是发布前人工检查，不要将其描述为已由脚本自动完成。
 
 1. 确认当前 npm 版本：`npm view agnes-image-mcp version --registry=https://registry.npmjs.org`；
 2. 确认 `package.json.repository.url` 与 GitHub 仓库匹配；

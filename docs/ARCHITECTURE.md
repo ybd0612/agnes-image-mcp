@@ -12,10 +12,7 @@ agnes-image-mcp/
 │   ├── config.ts                # 环境变量与默认值
 │   ├── errors.ts                # 统一错误码与错误信封
 │   ├── schemas/
-│   │   ├── generate-image.ts    # 单图参数 schema
-│   │   ├── generate-images.ts   # 批量参数 schema
-│   │   ├── download-image.ts    # 下载参数 schema
-│   │   └── validate-image.ts    # 校验参数 schema
+│   │   └── generate-images.ts   # 统一单图/批量参数 schema
 │   ├── providers/
 │   │   ├── image-provider.ts    # Provider 接口
 │   │   └── agnes-provider.ts    # Agnes API 实现
@@ -56,9 +53,9 @@ agnes-image-mcp/
 - `image-provider.ts`：定义与供应商无关的图片能力接口。
 - `agnes-provider.ts`：构造 Agnes 官方请求，确保 `response_format` 放在 `extra_body`，图像输入放在 `extra_body.image`。
 - `rate-limiter.ts`：按 `size` 维护免费版 default RPM 桶。
-- `retry.ts`：只对网络错误、超时和 429 等可恢复错误重试。
+- `retry.ts`：只对已明确可恢复的上游超时和 429 重试；网络错误不自动重试，避免未知状态下重复消耗额度。
 - `download-service.ts`：将 Agnes HTTPS 结果落盘到 `output/`，负责 SSRF、重定向、路径安全和下载内容校验。
-- `validation-service.ts`：保留本地图片格式校验能力，第一版由生成工作流内部调用，不单独注册 MCP Tool。
+- `validation-service.ts`：提供本地图片格式校验能力；第一版由下载流程内部完成等价校验，不单独注册 MCP Tool。
 - `services/`：将底层结果转换为稳定的 MCP 返回格式。
 
 ## 3. 公共接口模型
@@ -72,25 +69,39 @@ interface ImageGenerationRequest {
   images?: string[];
 }
 
-interface ImageGenerationResult {
+interface BatchItem {
+  index: number;
+  id?: string;
   success: boolean;
-  provider: 'agnes';
-  model: string;
-  url: string;
-  localPath: string;
-  format: 'png' | 'jpeg' | 'gif' | 'webp';
-  bytes: number;
-  validated: true;
-  revisedPrompt?: string | null;
-  created?: number;
+  image?: GenerationData;
+  file?: {
+    path: string;
+    bytes: number;
+    mimeType: string;
+    sha256: string;
+    validated: true;
+  };
+  error?: {
+    code: string;
+    message: string;
+    stage: 'generation' | 'download';
+  };
+}
+
+interface GenerationBatchResult {
+  requestedCount: number;
+  succeededCount: number;
+  failedCount: number;
+  skippedCount: number;
+  results: BatchItem[];
 }
 ```
 
-调用方参数使用 `images`，Provider 内部映射为 Agnes 的 `extra_body.image`；第一版固定使用 URL 输出，再由下载服务落盘并校验。
+调用方参数使用 `images`，Provider 内部映射为 Agnes 的 `extra_body.image`；第一版固定请求 URL 输出，再由下载服务落盘并校验。`image` 是上游标准化结果，`file` 是对外返回的本地文件结果；`width`、`height` 当前不做解码检测。
 
 ## 4. Agnes 请求映射
 
-### 文生图 URL
+### 文生图 URL（内部请求，不是 MCP 调用方参数）
 
 ```json
 {
@@ -102,7 +113,7 @@ interface ImageGenerationResult {
 }
 ```
 
-### 图生图/多图合成
+### 图生图/多图合成（内部请求，不是 MCP 调用方参数）
 
 ```json
 {
@@ -138,8 +149,8 @@ MCP Client
   → retry：执行可恢复重试
   → provider：构造 Agnes 请求并获取 URL
   → download：校验后下载到 output/
-  → validation：校验 MIME、魔数和大小
-  → server：返回本地路径与批量结果
+  → download：下载响应并校验 MIME、魔数和大小
+  → server：返回 image 元数据、本地 file 元数据与批量结果
 ```
 
 ## 7. 安全边界

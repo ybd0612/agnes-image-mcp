@@ -36,7 +36,7 @@ POST https://api.agnes-ai.cn/v1/images/generations
 - `ratio`：`1:1`、`3:4`、`4:3`、`16:9`、`9:16`、`2:3`、`3:2`、`21:9`；
 - 图生图/多图合成：通过 `extra_body.image` 传入参考图；具体来源校验遵循安全边界。
 - URL 输出：`extra_body.response_format = "url"`；
-- Base64 输出：文生图可使用 `return_base64 = true`，图生图使用 `extra_body.response_format = "b64_json"`；
+- Base64 输出属于 Agnes 官方能力，但第一版不对外暴露；服务固定请求 URL 输出并自动下载；
 - 不在顶层放置 `response_format`；不传递 `tags: ["img2img"]`。
 
 ## 3. 免费版 RPM 基线
@@ -162,7 +162,7 @@ Agnes API
 - 统一 `generate_images` 工具（数组单图/批量）；
 - 参数校验与默认值；
 - 免费版 default RPM 限流；
-- 429、超时、网络错误重试；
+- 429、上游超时按策略重试；网络错误不自动重试；
 - Agnes URL 下载与图片文件校验；
 - 日志脱敏；
 - 单元测试和 API mock 测试；

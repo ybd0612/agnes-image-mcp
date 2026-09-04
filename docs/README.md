@@ -2,7 +2,7 @@
 
 ## §0 事故复盘
 
-本轮实施前审查发现：RPM 表同时出现“允许发起”和冻结实际值，API 同时使用 `responseFormat`、`count`、`endpoint` 与冻结字段，批量还暴露了未冻结的重试字段，且 `validate_image` 曾放行网络来源。为避免实现阶段继续漂移，本总纲以 `docs/DECISIONS.md` 为最高优先级，集中登记冻结口径。
+本总纲记录本项目第一版的冻结口径：面向 Agnes 免费用户组 `default`，对外仅提供 `generate_images`，并由内部统一完成限流、下载与图片文件校验。历史冲突仅保留在下方冲突登记中，不代表当前仍支持旧能力。
 
 ## §1 文档地图
 
@@ -72,7 +72,7 @@
 | ID | 冲突 | 严重度 | 处置 |
 |---|---|---|---|
 | C-001 | RPM 表含“允许发起”30/20 等非冻结值 | 高 | ✅ 已修为实际 RPM 冻结值 |
-| C-002 | API 使用 `responseFormat`、`count`、`endpoint`，并暴露未冻结的 retry 字段 | 高 | ✅ 已统一为 `output`、`items[]`，移除 endpoint/retry 工具参数 |
+| C-002 | API 曾使用 `responseFormat`、`count`、`endpoint`，并暴露未冻结的 retry 字段 | 高 | ✅ 已统一为 `items[]`，移除 endpoint、retry 和输出格式工具参数 |
 | C-003 | 精确尺寸被 API/限流文档放行 | 高 | ✅ 已限制为四档枚举 |
 | C-004 | 下载和校验曾作为独立工具暴露 | 高 | ✅ 第一版收敛为生成工具内部自动下载与校验 |
 | C-005 | 批量默认行为与冻结值冲突 | 中 | ✅ 已统一 `continueOnError=false`、串行执行 |
