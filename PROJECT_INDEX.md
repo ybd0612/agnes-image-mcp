@@ -12,7 +12,7 @@
 |---|---|---|---|
 | `PROJECT_PLAN.md` | 产品与范围 | 已完成初稿 | 项目目标、版本范围、官方接口基线、RPM |
 | `docs/ARCHITECTURE.md` | 架构设计 | 实现基线 | 目录、模块、接口、限流、安全边界 |
-| `docs/API.md` | 工具协议 | 实现基线 | 四个 MCP 工具输入输出 |
+| `docs/API.md` | 统一图片生成工具协议 | 实现基线 | `generate_images` 输入输出 |
 | `docs/RATE_LIMITING.md` | 技术专题 | 实现基线 | 免费版 default RPM 与限流语义 |
 | `docs/SECURITY.md` | 安全专题 | 实现基线 | 凭据、SSRF、路径、开源边界 |
 | `docs/QA_PLAN.md` | QA 规划 | 发布门禁 | 测试矩阵与发布门禁 |
