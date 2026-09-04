@@ -13,13 +13,12 @@ describe('MCP server registration', () => {
     await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
 
     const { tools } = await client.listTools();
-    expect(tools.map((tool) => tool.name)).toEqual(['generate_image', 'generate_images', 'download_image', 'validate_image']);
+    expect(tools.map((tool) => tool.name)).toEqual(['generate_images']);
     for (const tool of tools) {
       expect(tool.inputSchema.additionalProperties).toBe(false);
       expect(tool.outputSchema).toMatchObject({ type: 'object', additionalProperties: false });
       expect(tool.annotations).toBeDefined();
     }
-    expect(tools.find((tool) => tool.name === 'validate_image')?.annotations).toMatchObject({ readOnlyHint: true, destructiveHint: false, idempotentHint: true });
     await client.close();
     await server.close();
   });
@@ -30,21 +29,22 @@ describe('MCP server registration', () => {
     const client = new Client({ name: 'test-client', version: '1.0.0' });
     await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
 
-    const response = await client.callTool({ name: 'validate_image', arguments: { path: 'package.json', unknown: true } });
+    const response = await client.callTool({ name: 'generate_images', arguments: { items: [{ prompt: 'test', unknown: true }] } });
     expect(response.isError).toBe(true);
     await client.close();
     await server.close();
   });
 
-  it('returns structured content matching the declared output schema', async () => {
+  it('advertises the unified items input and structured output', async () => {
     const server = createServer();
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
     const client = new Client({ name: 'test-client', version: '1.0.0' });
     await Promise.all([server.connect(serverTransport), client.connect(clientTransport)]);
 
-    const response = await client.callTool({ name: 'validate_image', arguments: { path: 'package.json' } });
-    expect(response.structuredContent).toMatchObject({ code: 'INVALID_IMAGE', data: { valid: false } });
-    expect(response.content[0]).toMatchObject({ type: 'text' });
+    const { tools } = await client.listTools();
+    expect(tools[0]?.inputSchema.required).toContain('items');
+    expect(tools[0]?.inputSchema.properties).toHaveProperty('items');
+    expect(tools[0]?.outputSchema).toMatchObject({ type: 'object', additionalProperties: false });
     await client.close();
     await server.close();
   });

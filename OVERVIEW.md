@@ -4,7 +4,7 @@
 
 - 以 `docs/DECISIONS.md` 为最高优先级，新增 `docs/README.md` 文档总纲、SSOT、冲突登记和同步铁律。
 - 同步修正 `PROJECT_PLAN.md`、`docs/ARCHITECTURE.md`、`docs/API.md`、`docs/RATE_LIMITING.md`、`docs/SECURITY.md`，并更新 QA、发布、项目索引与概览文档。
-- 文档统一为冻结方案：四个工具、`items[]`、`output=url/base64`、四档 size、批量默认停止与串行、HTTPS 下载、本地路径校验、default RPM 和失败不退款。
+- 第一版已收敛为单一 `generate_images` 工具：`items[]` 一项表示单张、多项表示批量；默认 1K/1:1，免费 `default` 实际 RPM 限流，自动下载和校验到 `output/`，最多 10 项、同步串行，不实现异步队列。
 - 源码统一更新类型、Schema、Provider、配置、批量服务、下载安全和本地校验入口；移除公开 `AGNES_ENDPOINT` 配置和工具字段。
 - 依赖恢复后 TypeScript 类型检查通过；旧字段扫描仅剩 Provider 内部读取上游 `b64_json` 的兼容映射。
 

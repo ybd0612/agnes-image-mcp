@@ -70,28 +70,22 @@ npm install --global agnes-image-mcp@latest
 
 ## 可用工具
 
-所有工具调用都会返回包含 `code`、`message` 和 `data` 的结构化结果。错误使用稳定错误码返回，不会暴露 API 密钥。
-
-### `generate_image`
-
-调用 Agnes API 生成一张图片。必填参数为 `prompt` 和 `size`；支持 `model`、`ratio`、参考图 `images` 和 `output`。`output` 可选 `url` 或 `base64`，默认是 `url`。这是远程网络操作，会消耗上游额度并受限流策略影响。
+第一版只暴露一个 `generate_images` 工具，专门服务 Agnes 免费用户组 `default`。所有调用都会返回包含 `code`、`message` 和 `data` 的结构化结果。
 
 ### `generate_images`
 
-批量生成 1 至 10 张图片。默认串行执行（`concurrency=1`），遇到失败默认停止（`continueOnError=false`）。每个项目可通过 `id` 标记结果。
+传入 `items` 数组：一个 item 表示单张生成，多个 item 表示批量生成，最多 10 项。每项只有 `prompt` 必填，`size` 默认 `1K`，`ratio` 默认 `1:1`，`model` 默认使用 `AGNES_MODEL` 或 `agnes-image-2.5-flash`；图生图时可传 `images`。
 
-### `download_image`
+服务会按免费版 `default` 实际 RPM 串行执行：`1K=20 RPM`、`2K=10 RPM`、`3K=1 RPM`、`4K=1 RPM`。生成后自动将 HTTPS 图片下载到当前工作目录的 `output/`，并校验响应 MIME、图片魔数和大小，成功后返回本地路径、格式、字节数和 SHA-256。默认遇错停止，可传 `continueOnError=true` 继续处理剩余任务。
 
-将 HTTPS 图片 URL 下载到当前工作目录下的相对路径。会拒绝非 HTTPS、内网目标、路径穿越、覆盖已有文件、不支持的内容以及超过默认 10 MiB 限制的响应。
+第一版不暴露 `output`、`outputPath`、`concurrency`、`tier`，也不实现异步 `jobId` 队列。100 个 1K 任务仅按 RPM 容量就至少需要约 5 分钟，实际还包括生成、下载和重试时间。
 
-### `validate_image`
-
-读取当前工作目录下的相对本地路径，校验文件大小和图片签名。支持 PNG、JPEG、GIF 和 WebP，不访问网络，也不会修改文件。
+校验只保证文件是受支持的 PNG、JPEG、GIF 或 WebP 且大小符合限制，不代表图片内容质量或提示词语义一定符合预期。
 
 ## 安全边界
 
 - `AGNES_API_KEY` 是敏感凭据，不要写入日志、Issue、提示词或版本库。
-- 只有调用生成工具时才会访问 Agnes 远程 API。
+- 只有调用 `generate_images` 时才会访问 Agnes 远程 API；下载和校验是其内部步骤。
 - 下载路径限制在当前工作目录内，下载地址必须是 HTTPS，且会拒绝内网地址。
 - 发送给生成接口的参考图会上传到 Agnes；请确认符合你的数据和服务使用政策。
 - 本项目只提供图片能力，不负责故事、TTS、字幕、视频、项目文件或持久化数据库。

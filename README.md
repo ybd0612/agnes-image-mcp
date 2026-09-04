@@ -82,28 +82,22 @@ npx --yes agnes-image-mcp@0.1.7
 
 ## Available tools
 
-All tool calls return a structured envelope with `code`, `message`, and `data` fields. Errors are returned as MCP tool errors with a stable error code and do not expose the API key.
-
-### `generate_image`
-
-Generates one image through the Agnes API. Required inputs are `prompt` and `size`; optional inputs include `model`, `ratio`, `images` (reference image strings), and `output` (`url` or `base64`, default `url`). This is a remote, billable/network operation subject to provider availability and configured rate limiting.
+Version 1 exposes one tool for Agnes free-tier (`default`) users. All calls return a structured envelope with `code`, `message`, and `data` fields.
 
 ### `generate_images`
 
-Processes 1–10 generation items sequentially (`concurrency` is currently fixed at 1). Each item accepts the same generation fields as `generate_image`; an optional `id` labels results. `continueOnError` defaults to `false` and controls whether later items run after a failure.
+Pass an `items` array: one item generates one image, multiple items run as a batch, with up to 10 items. Only `prompt` is required per item. `size` defaults to `1K`, `ratio` defaults to `1:1`, and `model` defaults to `AGNES_MODEL` or `agnes-image-2.5-flash`. Use `images` for image-to-image or multi-image composition.
 
-### `download_image`
+The server runs the free-tier `default` actual RPM limits serially: `1K=20 RPM`, `2K=10 RPM`, `3K=1 RPM`, and `4K=1 RPM`. Each generated HTTPS result is downloaded into `output/` under the current working directory, then checked for response MIME type, image magic bytes, and size before the final result is reported. `continueOnError` defaults to `false`.
 
-Downloads an image from an HTTPS URL to a relative path beneath the current working directory. It rejects non-HTTPS URLs, private/internal network targets, path traversal, overwriting existing files, unsupported content, and responses over `maxBytes` (10 MiB by default). This tool writes a local file and performs network I/O.
+Version 1 does not expose `output`, `outputPath`, `concurrency`, or `tier`, and does not implement an asynchronous `jobId` queue. A batch of 100 1K items needs at least about five minutes from RPM capacity alone; generation, download, and retry time are additional.
 
-### `validate_image`
-
-Reads a relative local path beneath the current working directory and validates file size and image signature. PNG, JPEG, GIF, and WebP are supported. It does not access the network or modify the file.
+Validation confirms only that the downloaded file is a supported PNG, JPEG, GIF, or WebP within the size limit. It does not assess visual quality or semantic compliance with the prompt.
 
 ## Security and operational boundaries
 
 - Treat `AGNES_API_KEY` as a secret. Do not paste it into prompts, logs, issue reports, or checked-in configuration.
-- The server only performs remote generation when requested by an MCP client. `validate_image` is local-only.
+- The server only performs remote generation when requested by an MCP client; download and validation run as internal steps of `generate_images`.
 - Download destinations are constrained to the current working directory, and download URL checks reject insecure schemes and private network access.
 - Image data supplied to generation is sent to the configured Agnes endpoint. Do not send confidential images unless your usage and provider policy allow it.
 - This package provides image capabilities only; it does not create stories, TTS, subtitles, videos, project files, or persistent databases.

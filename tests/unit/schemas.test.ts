@@ -1,25 +1,19 @@
 import { describe, expect, it } from 'vitest';
-import { generateImageSchema } from '../../src/schemas/generate-image.ts';
 import { generateImagesSchema } from '../../src/schemas/generate-images.ts';
 import { downloadImageSchema } from '../../src/schemas/download-image.ts';
 import { validateImageSchema } from '../../src/schemas/validate-image.ts';
 
 describe('tool schemas', () => {
-  it('applies safe generation defaults and rejects unknown fields', () => {
-    const value = generateImageSchema.parse({ prompt: 'a cat', size: '1K' });
-    expect(value.output).toBe('url');
-    expect(() => generateImageSchema.parse({ prompt: 'a cat', size: '1K', unknown: true })).toThrow();
+  it('accepts one item as the single-image form and applies defaults', () => {
+    const value = generateImagesSchema.parse({ items: [{ prompt: 'a cat' }] });
+    expect(value).toMatchObject({ continueOnError: false, items: [{ size: '1K', ratio: '1:1' }] });
   });
 
-  it('rejects unsupported sizes and ratios', () => {
-    expect(() => generateImageSchema.parse({ prompt: 'x', size: '8K' })).toThrow();
-    expect(() => generateImageSchema.parse({ prompt: 'x', size: '1K', ratio: '5:7' })).toThrow();
-  });
-
-  it('defaults batch execution to serial, retrying twice, and stop-on-error', () => {
-    const value = generateImagesSchema.parse({ items: [{ id: 'one', prompt: 'x', size: '2K' }] });
-    expect(value).toMatchObject({ continueOnError: false, concurrency: 1 });
-    expect(value.items[0].output).toBe('url');
+  it('rejects unsupported sizes, ratios, empty items, and unknown fields', () => {
+    expect(() => generateImagesSchema.parse({ items: [{ prompt: 'x', size: '8K' }] })).toThrow();
+    expect(() => generateImagesSchema.parse({ items: [{ prompt: 'x', ratio: '5:7' }] })).toThrow();
+    expect(() => generateImagesSchema.parse({ items: [] })).toThrow();
+    expect(() => generateImagesSchema.parse({ items: [{ prompt: 'x', unknown: true }] })).toThrow();
   });
 
   it('rejects download path traversal and unknown fields', () => {

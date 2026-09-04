@@ -57,8 +57,8 @@ agnes-image-mcp/
 - `agnes-provider.ts`：构造 Agnes 官方请求，确保 `response_format` 放在 `extra_body`，图像输入放在 `extra_body.image`。
 - `rate-limiter.ts`：按 `size` 维护免费版 default RPM 桶。
 - `retry.ts`：只对网络错误、超时和 429 等可恢复错误重试。
-- `download-service.ts`：只在调用方明确提供路径时落盘，负责 SSRF、重定向和路径安全。
-- `validation-service.ts`：第一版仅验证沙箱内本地文件是否为可读取图片，并返回元数据。
+- `download-service.ts`：将 Agnes HTTPS 结果落盘到 `output/`，负责 SSRF、重定向、路径安全和下载内容校验。
+- `validation-service.ts`：保留本地图片格式校验能力，第一版由生成工作流内部调用，不单独注册 MCP Tool。
 - `services/`：将底层结果转换为稳定的 MCP 返回格式。
 
 ## 3. 公共接口模型
@@ -66,25 +66,27 @@ agnes-image-mcp/
 ```ts
 interface ImageGenerationRequest {
   prompt: string;
-  size: '1K' | '2K' | '3K' | '4K';
+  size?: '1K' | '2K' | '3K' | '4K';
   ratio?: '1:1' | '3:4' | '4:3' | '16:9' | '9:16' | '2:3' | '3:2' | '21:9';
   model?: string;
   images?: string[];
-  output?: 'url' | 'base64';
 }
 
 interface ImageGenerationResult {
   success: boolean;
   provider: 'agnes';
   model: string;
-  url?: string;
-  base64?: string;
+  url: string;
+  localPath: string;
+  format: 'png' | 'jpeg' | 'gif' | 'webp';
+  bytes: number;
+  validated: true;
   revisedPrompt?: string | null;
   created?: number;
 }
 ```
 
-调用方参数使用 `images` 和 `output`，Provider 内部再映射为 Agnes 的 `extra_body.image`、`extra_body.response_format` 或 `return_base64`。
+调用方参数使用 `images`，Provider 内部映射为 Agnes 的 `extra_body.image`；第一版固定使用 URL 输出，再由下载服务落盘并校验。
 
 ## 4. Agnes 请求映射
 
@@ -129,15 +131,15 @@ interface ImageGenerationResult {
 
 ```text
 MCP Client
-  → server：调用 generate_image
-  → schema：校验参数
-  → service：标准化请求
-  → limiter：等待 size 档位
+  → server：调用 generate_images
+  → schema：校验 items 与默认值
+  → service：按 items 串行处理
+  → limiter：按免费 default size 等待
   → retry：执行可恢复重试
-  → provider：构造 Agnes 请求
-  → Agnes API：返回 URL 或 Base64
-  → service：标准化结果
-  → server：返回 MCP 响应
+  → provider：构造 Agnes 请求并获取 URL
+  → download：校验后下载到 output/
+  → validation：校验 MIME、魔数和大小
+  → server：返回本地路径与批量结果
 ```
 
 ## 7. 安全边界
@@ -153,7 +155,7 @@ MCP Client
 ## 8. 实施状态与后续维护
 
 ```text
-已完成：TypeScript + MCP stdio 骨架、公共类型/schema/错误模型、Agnes Provider、分桶限流、可恢复重试、四个工具、安全底座、MCP registerTool、outputSchema/structuredContent、优雅退出和自动化测试
+已完成：TypeScript + MCP stdio 骨架、公共类型/schema/错误模型、Agnes Provider、免费 default 分桶限流、可恢复重试、统一图片生成工具（自动下载与校验）、安全底座、MCP registerTool、outputSchema/structuredContent、优雅退出和自动化测试
 持续维护：依赖升级、真实上游契约复核、发布门禁和安全回归
 ```
 

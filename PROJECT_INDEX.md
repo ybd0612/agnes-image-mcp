@@ -33,7 +33,7 @@
 ## 已冻结实施前提
 
 1. 批量使用 `items[]`，第一版不使用 Agnes 官方 `n` 字段；
-2. `download_image` 仅接受 HTTPS URL，`validate_image` 第一版仅接受本地路径；
+2. `generate_images` 内部仅接受 Agnes 返回的 HTTPS URL，自动下载到 `output/` 并校验；
 3. Endpoint 固定官方默认地址，不作为工具参数；仅测试代码可依赖注入覆盖；
 4. 文档、源码和发布流程已完成第一版收敛，当前 npm 已发布 `0.1.7`；后续按版本迭代维护。
 

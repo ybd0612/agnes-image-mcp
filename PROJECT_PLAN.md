@@ -15,7 +15,7 @@
 | 技术语言 | TypeScript |
 | MCP 传输 | stdio |
 | 开源协议 | MIT |
-| 第一版范围 | 单图生成、批量生成、图片下载、图片校验 |
+| 第一版范围 | 统一图片生成工作流：数组单图/批量、自动下载、自动校验 |
 | 服务配置 | `AGNES_API_KEY`、`AGNES_MODEL` |
 | API 默认地址 | `https://api.agnes-ai.cn/v1/images/generations` |
 | 默认模型 | `agnes-image-2.5-flash` |
@@ -79,84 +79,38 @@ Endpoint 固定官方默认地址，不作为环境变量或工具参数暴露�
 
 ### 调用方参数
 
-以下字段全部由工具调用方传入，不进入环境变量：
+工具调用方可传入以下字段，不进入环境变量：
 
 ```text
-model
-prompt
-size
-ratio
-images
-output
-outputPath
-concurrency
+items[].id
+items[].prompt
+items[].model
+items[].size
+items[].ratio
+items[].images
 continueOnError
 ```
 
+`size` 默认 `1K`，`ratio` 默认 `1:1`；输出路径、输出格式、用户组、并发和队列策略均由第一版服务内部固定处理。
+
 ## 5. MCP 工具范围
-
-### `generate_image`
-
-生成单张图片，支持文生图、图生图和多图合成。
-
-输入核心字段：
-
-```json
-{
-  "prompt": "...",
-  "size": "1K",
-  "ratio": "9:16",
-  "model": "可选",
-  "images": [],
-  "output": "url"
-}
-```
-
-返回标准结果：
-
-```json
-{
-  "success": true,
-  "provider": "agnes",
-  "model": "agnes-image-2.5-flash",
-  "url": "https://...",
-  "base64": null,
-  "revisedPrompt": null,
-  "created": 1780000000
-}
-```
 
 ### `generate_images`
 
-批量生成。第一版默认串行，单项独立重试，单项失败不丢失其他成功结果。
+统一生成图片工作流，支持文生图、图生图和多图合成。一项 `items[]` 表示单张，多项表示批量；最多 10 项。每项仅 `prompt` 必填，`size` 默认 `1K`、`ratio` 默认 `1:1`，模型默认 `agnes-image-2.5-flash`。
+
+生成后自动下载到 `output/` 并校验响应 MIME、图片魔数和大小。第一版不暴露 `output`、`outputPath`、`concurrency`、`tier`，不实现异步任务队列。批量默认串行，`continueOnError=false`。
 
 ```json
 {
   "items": [
     { "id": "scene-01", "prompt": "...", "size": "1K", "ratio": "9:16" }
   ],
-  "continueOnError": false,
-  "concurrency": 1
+  "continueOnError": false
 }
 ```
 
-### `download_image`
-
-将 HTTPS URL 图片保存到调用方明确指定的本地路径。第一版不接受 Data URI 或 Base64 作为下载输入，默认不落盘。
-
-安全要求：
-
-- 规范化目标路径；
-- 拒绝系统目录和明显危险目录；
-- 防止路径越界；
-- 限制重定向次数；
-- 仅允许 `https`（本地测试可显式放宽）；
-- 限制响应大小；
-- 不自动删除或覆盖无关文件。
-
-### `validate_image`
-
-校验沙箱内本地图片是否可读取，并返回格式、宽度、高度和文件大小。第一版不接受 URL/Data URI，不承担图片压缩、裁剪或重编码。
+文件安全要求：仅使用 Agnes 返回的 HTTPS URL；输出限制在当前工作目录的 `output/`；拒绝路径越界、符号链接和覆盖；下载失败或校验失败不会报告成功文件。
 
 ## 6. 错误码
 
@@ -205,14 +159,11 @@ Agnes API
 ### P0：第一版必须有
 
 - stdio MCP 服务启动；
-- `generate_image`；
-- `generate_images`；
-- 参数校验；
+- 统一 `generate_images` 工具（数组单图/批量）；
+- 参数校验与默认值；
 - 免费版 default RPM 限流；
 - 429、超时、网络错误重试；
-- URL/Base64 标准化；
-- `download_image`；
-- `validate_image`；
+- Agnes URL 下载与图片文件校验；
 - 日志脱敏；
 - 单元测试和 API mock 测试；
 - README、LICENSE、`.env.example`、安全说明。

@@ -5,7 +5,7 @@
 ## 1. P0 验收标准
 
 - stdio MCP 可被客户端启动并完成握手；
-- 四个工具 schema 与错误响应稳定；
+- 单一 `generate_images` 工具 schema 与错误响应稳定；
 - 文生图请求严格包含 `model`、`prompt`、`size`；
 - 图生图使用 `extra_body.image`，不传 `tags`；
 - `response_format` 不出现在请求顶层；

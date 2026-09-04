@@ -12,7 +12,7 @@
 |---|---|---|---|---|
 | `DECISIONS.md` | 实施前冻结决策 | 冻结基线 | 🟢一致 | 最高 |
 | `ARCHITECTURE.md` | 模块、类型、时序、安全边界 | 实现基线 | 🟢一致 | 高 |
-| `API.md` | 四个 MCP 工具协议 | 实现基线 | 🟢一致 | 高 |
+| `API.md` | 统一图片生成工具协议 | 实现基线 | 🟢一致 | 高 |
 | `RATE_LIMITING.md` | RPM 与批量限流 | 实现基线 | 🟢一致 | 高 |
 | `SECURITY.md` | 凭据、路径、SSRF、发布边界 | 实现基线 | 🟢一致 | 高 |
 | `QA_PLAN.md` | 测试矩阵与质量门禁 | 发布门禁 | 🟢一致 | 中 |
@@ -41,14 +41,15 @@
 | license | MIT | `DECISIONS.md` + 用户冻结方案 |
 | credentials | 仅 `AGNES_API_KEY`；默认模型配置为 `AGNES_MODEL` | D-001 |
 | endpoint | 官方默认地址；不作为工具参数；仅测试可依赖注入覆盖 | D-001 |
-| tools | `generate_image`、`generate_images`、`download_image`、`validate_image` | D-002 |
+| tools | 仅 `generate_images`：`items[]` 一项表示单张，多项表示批量；内部自动生成、下载和校验 | D-002 |
 | batch input | `items[]` | D-002 |
-| output | `url` 或 `base64` | D-002 |
-| size | 仅 `1K`、`2K`、`3K`、`4K` | D-002 |
-| continueOnError | 默认 `false` | D-003 |
-| concurrency | 默认 `1` | D-003 |
-| download source | 仅 HTTPS URL | D-004 |
-| validate source | 第一版仅本地路径 | D-004 |
+| output | Agnes 上游固定请求 URL，统一自动下载到当前工作目录，不暴露 `url/base64` 选择 | 用户冻结方案 |
+| size | 可选，默认 `1K`；仅 `1K`、`2K`、`3K`、`4K` | D-002 |
+| ratio | 可选，默认 `1:1`；仅支持官方比例 | D-002 |
+| continueOnError | 可选，默认 `false`；批量任务失败后停止 | D-003 |
+| execution | 第一版同步等待、串行执行、最多 10 项；不实现异步 job 队列 | 用户冻结方案 |
+| download | 生成后自动下载到 `process.cwd()/output` | D-004 |
+| validate | 下载后自动校验图片 MIME、魔数和大小；不单独暴露 Tool | D-004 |
 | RPM default | `1K=20`、`2K=10`、`3K=1`、`4K=1` | 用户冻结方案 |
 | accounting | 每次真实上游请求计数；失败不退款 | D-003 |
 | local path boundary | `process.cwd()` 沙箱；拒绝绝对路径、`..`、符号链接；不覆盖已有文件 | D-004 |
@@ -73,11 +74,12 @@
 | C-001 | RPM 表含“允许发起”30/20 等非冻结值 | 高 | ✅ 已修为实际 RPM 冻结值 |
 | C-002 | API 使用 `responseFormat`、`count`、`endpoint`，并暴露未冻结的 retry 字段 | 高 | ✅ 已统一为 `output`、`items[]`，移除 endpoint/retry 工具参数 |
 | C-003 | 精确尺寸被 API/限流文档放行 | 高 | ✅ 已限制为四档枚举 |
-| C-004 | `validate_image` 放行 HTTPS/Data URI | 高 | ✅ 已限制第一版本地路径 |
-| C-005 | 批量默认行为与冻结值冲突 | 中 | ✅ 已统一 `continueOnError=false`、`concurrency=1` |
+| C-004 | 下载和校验曾作为独立工具暴露 | 高 | ✅ 第一版收敛为生成工具内部自动下载与校验 |
+| C-005 | 批量默认行为与冻结值冲突 | 中 | ✅ 已统一 `continueOnError=false`、串行执行 |
 
 ## §5 变更日志
 
 | 日期 | 变更 | 责任人 |
 |---|---|---|
 | 2026-09-02 | 以 `DECISIONS.md` 为 SSOT，统一字段、工具、尺寸、RPM、批量和文件/网络边界；完成三批源码与安全优化，测试通过 | Luna |
+| 2026-09-04 | 第一版收敛为单一 `generate_images` 工具：数组统一单图/批量，默认 1K/1:1，免费 default 实际 RPM 限流，自动下载与校验；不实现异步队列 | Luna |
