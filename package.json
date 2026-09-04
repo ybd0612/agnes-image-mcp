@@ -1,6 +1,6 @@
 {
   "name": "agnes-image-mcp",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "MCP stdio server for Agnes image generation",
   "type": "module",
   "main": "dist/index.js",

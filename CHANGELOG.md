@@ -2,12 +2,12 @@
 
 All notable changes to this project are documented in this file.
 
-## [Unreleased] - 2026-09-04
+## [0.1.8] - 2026-09-04
 
-- 第一版接口收敛为单一 `generate_images` 工具，使用 `items[]` 统一单张和批量生成。
-- 面向 Agnes 免费用户组 `default`，按 1K/2K/3K/4K 实际 RPM 串行限流。
-- 生成结果自动下载到 `output/`，下载后校验图片 MIME、魔数和大小。
-- 默认 `size=1K`、`ratio=1:1`；最多 10 项；不实现异步 job 队列。
+- 修正文档与第一版 `generate_images` 实际实现、测试及发布门禁之间的口径差异。
+- 明确免费 `default` RPM、自动下载校验、重试边界和人工发布检查范围。
+
+## [Unreleased]
 
 ## [0.1.7] - 2026-09-02
 
