@@ -24,7 +24,7 @@ AGNES_API_KEY=your-key npx --yes agnes-image-mcp@latest
 For reproducible deployments, pin the version explicitly:
 
 ```bash
-AGNES_API_KEY=your-key npx --yes agnes-image-mcp@0.1.7
+AGNES_API_KEY=your-key npx --yes agnes-image-mcp@0.1.9
 ```
 
 The package is an MCP **stdio** server. It does not open an HTTP listener and does not make an API request until an MCP tool is called.
@@ -69,7 +69,7 @@ Bash (Linux/macOS, current shell only):
 ```bash
 export AGNES_API_KEY='your-key'
 export AGNES_MODEL='agnes-image-2.5-flash' # optional
-npx --yes agnes-image-mcp@0.1.7
+npx --yes agnes-image-mcp@0.1.9
 ```
 
 PowerShell (Windows, current session only):
@@ -77,7 +77,7 @@ PowerShell (Windows, current session only):
 ```powershell
 $env:AGNES_API_KEY = 'your-key'
 $env:AGNES_MODEL = 'agnes-image-2.5-flash' # optional
-npx --yes agnes-image-mcp@0.1.7
+npx --yes agnes-image-mcp@0.1.9
 ```
 
 ## Available tools

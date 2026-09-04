@@ -21,10 +21,10 @@ $env:AGNES_API_KEY = "你的密钥"
 npx --yes agnes-image-mcp@latest
 ```
 
-当前稳定版本为 `0.1.7`。需要可复现部署时，可固定已发布版本：
+当前稳定版本为 `0.1.9`。需要可复现部署时，可固定已发布版本：
 
 ```bash
-AGNES_API_KEY=你的密钥 npx --yes agnes-image-mcp@0.1.7
+AGNES_API_KEY=你的密钥 npx --yes agnes-image-mcp@0.1.9
 ```
 
 这是 MCP **stdio** 服务，不会监听 HTTP 端口；只有客户端实际调用 MCP 工具时，才会发起远程图片请求。

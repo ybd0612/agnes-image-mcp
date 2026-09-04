@@ -31,8 +31,8 @@
 - 已补齐 clean-install tarball 冒烟与 tag 发布工作流：`smoke:tarball` 从 npm tgz 安装后验证唯一的 `generate_images` 工具，`.github/workflows/publish.yml` 仅 tag/手动触发并使用 npm Trusted Publishing OIDC，未包含真实凭据。
 - 已配置 GitHub remote `git@github.com:ybd0612/agnes-image-mcp.git`，并成功推送 `master` 至 `origin/master`。
 - npm 默认源仍为 `https://registry.npmmirror.com`；官方发布已通过 Trusted Publishing 完成，不依赖 `NPM_TOKEN`。
-- v0.1.3/v0.1.4 曾因审计步骤与旧标签代码失败；随后修复生产依赖审计、构建顺序和动态版本校验，并在 GitHub Actions 手动运行最新 master 成功发布 `0.1.7`。
-- npm 官方当前版本：`0.1.7`，latest dist-tag 为 `0.1.7`；后续版本应升级 package.json 版本并推送对应 `v*` 标签触发 Publish。
+- v0.1.3/v0.1.4 曾因审计步骤与旧标签代码失败；随后修复生产依赖审计、构建顺序和动态版本校验，并在 GitHub Actions 手动运行最新 master 成功发布 `0.1.8`，随后修正文档版本示例准备发布 `0.1.9`。
+- npm 官方曾核验 `0.1.8` 已发布；本轮修正文档中的旧版本示例，准备发布 `0.1.9`，发布后应再次核验 latest dist-tag。
 - 英文和中文 README 已互相添加语言切换链接，入口分别为 `README.md` 与 `README.zh-CN.md`。
 - `.github/workflows/publish.yml` 已切换到 GitHub OIDC：Node 24、`setup-node@v6`、关闭缓存、`npm publish --access public --provenance`；`package.json.repository.url` 已匹配 GitHub 仓库。
 - Trusted Publisher 配置需要在 npm 包设置中填写用户 `ybd0612`、仓库 `agnes-image-mcp`、工作流文件 `publish.yml`，允许 `npm publish`。

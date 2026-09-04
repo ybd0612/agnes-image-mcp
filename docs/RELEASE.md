@@ -45,4 +45,4 @@
 6. 使用已配置的 npm Trusted Publisher，由 GitHub Actions 自动发布到 npm；
 7. 发布后验证：`npm view agnes-image-mcp version --registry=https://registry.npmjs.org`，并使用 `npx -y agnes-image-mcp@latest` 测试。
 
-当前已发布版本为 `0.1.7`。发生破坏性变更时使用 major 版本并更新迁移说明。
+当前已发布版本为 `0.1.9`。发生破坏性变更时使用 major 版本并更新迁移说明。
