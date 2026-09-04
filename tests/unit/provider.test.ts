@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { AgnesProvider } from '../../src/providers/agnes-provider.ts';
+import { AgnesProvider } from '../../src/providers/agnes-provider.js';
 
 describe('AgnesProvider', () => {
   it('maps URL generation to the official request shape', async () => {

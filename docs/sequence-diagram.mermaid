@@ -7,15 +7,20 @@ sequenceDiagram
     participant P as Agnes Provider
     participant A as Agnes API
 
-    C->>S: call generate_image
-    S->>V: validate request
-    V-->>S: normalized request
-    S->>L: acquire token by size
-    L-->>S: permit
-    S->>R: execute with retry policy
-    R->>P: generate(request)
-    P->>A: POST /v1/images/generations
-    A-->>P: URL or Base64 response
-    P-->>R: normalized provider result
-    R-->>S: result or typed error
-    S-->>C: MCP JSON envelope
+    C->>S: call generate_images(items[])
+    S->>V: validate request and defaults
+    V-->>S: normalized items
+    loop each item (FIFO, max 10)
+      S->>L: acquire token by size (default RPM)
+      L-->>S: permit
+      S->>R: execute generation with retry policy
+      R->>P: generate(item)
+      P->>A: POST /v1/images/generations
+      A-->>P: image URL
+      P-->>R: normalized provider result
+      R-->>S: URL or typed error
+      S->>S: download HTTPS image
+      S->>S: validate MIME, magic bytes, size
+      S->>S: write output/ after validation
+    end
+    S-->>C: MCP JSON envelope with per-item results

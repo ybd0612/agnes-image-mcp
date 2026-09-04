@@ -12,14 +12,17 @@ classDiagram
       -provider
       -limiter
       -retryPolicy
-      +generateImage(request)
-      +generateImages(request)
+      +generate(request)
+    }
+    class BatchService {
+      +generateBatch(items)
+      +downloadAndValidate(image)
     }
     class DownloadService {
-      +download(source, outputPath)
+      +download(url, outputPath)
     }
     class ValidationService {
-      +validate(source)
+      +validate(path)
     }
     class RateLimiter {
       +acquire(size)
@@ -31,5 +34,6 @@ classDiagram
     ImageService --> ImageProvider
     ImageService --> RateLimiter
     ImageService --> RetryPolicy
+    BatchService --> ImageService
+    BatchService --> DownloadService
     DownloadService --> ValidationService
-    AgnesProvider --> RateLimiter

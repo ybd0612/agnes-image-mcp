@@ -1,7 +1,7 @@
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
 import { describe, expect, it } from 'vitest';
-import { createServer } from '../../src/server.ts';
+import { createServer } from '../../src/server.js';
 
 process.env.AGNES_API_KEY = 'test-key';
 

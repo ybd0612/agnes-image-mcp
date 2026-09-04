@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
-import { AppError } from '../../src/errors.ts';
-import { isRetryable, retryAfterMs, withRetry } from '../../src/infra/retry.ts';
+import { AppError } from '../../src/errors.js';
+import { isRetryable, retryAfterMs, withRetry } from '../../src/infra/retry.js';
 
 describe('retry policy', () => {
   it('only retries rate limits and timeouts', async () => {

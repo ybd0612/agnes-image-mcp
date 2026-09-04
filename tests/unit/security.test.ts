@@ -1,7 +1,7 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { downloadImage } from '../../src/services/download-service.ts';
+import { downloadImage } from '../../src/services/download-service.js';
 import { validateImage } from '../../src/services/validation-service.ts';
 import { AgnesProvider } from '../../src/providers/agnes-provider.ts';
 

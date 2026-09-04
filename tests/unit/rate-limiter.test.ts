@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { RateLimiter } from '../../src/infra/rate-limiter.ts';
+import { RateLimiter } from '../../src/infra/rate-limiter.js';
 
 describe('RateLimiter', () => {
   it('serializes requests within each size bucket', async () => {

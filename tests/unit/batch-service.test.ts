@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { generateBatch } from '../../src/services/batch-service.ts';
-import { AppError } from '../../src/errors.ts';
+import { generateBatch } from '../../src/services/batch-service.js';
+import { AppError } from '../../src/errors.js';
 
 const image = { model: 'm', size: '1K' as const, output: 'url' as const, url: 'https://example.test/image.png', base64: null, revisedPrompt: null };
 

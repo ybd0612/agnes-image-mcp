@@ -32,11 +32,11 @@ function waitForClose(child, timeoutMs = 10000) {
 }
 
 try {
-  const packOutput = runNpm(['pack', '--json'], root);
+  const packOutput = runNpm(['pack', '--json', '--pack-destination', workDir], root);
   const metadata = JSON.parse(packOutput.slice(packOutput.indexOf('[')));
   const tarballName = metadata[0]?.filename;
   if (!tarballName) throw new Error('npm pack did not return tarball filename');
-  const tarballPath = resolve(root, tarballName);
+  const tarballPath = resolve(workDir, tarballName);
   runNpm(['init', '-y'], workDir);
   runNpm(['install', tarballPath, '--ignore-scripts'], workDir);
   const entry = join(workDir, 'node_modules', 'agnes-image-mcp', 'dist', 'index.js');
@@ -46,14 +46,16 @@ try {
     await client.connect(transport);
     const response = await client.listTools();
     const names = response.tools.map((tool) => tool.name);
-    const expected = ['generate_image', 'generate_images', 'download_image', 'validate_image'];
+    const expected = ['generate_images'];
     const missing = expected.filter((name) => !names.includes(name));
-    if (missing.length) throw new Error(`Missing tools after tarball install: ${missing.join(', ')}`);
+    const unexpected = names.filter((name) => !expected.includes(name));
+    if (missing.length || unexpected.length) {
+      throw new Error(`Tool contract mismatch after tarball install; missing=${missing.join(', ') || 'none'}, unexpected=${unexpected.join(', ') || 'none'}`);
+    }
     console.log(`tarball smoke test passed (${names.length} tools, clean install)`);
   } finally {
     await client.close().catch(() => undefined);
   }
-  await rm(tarballPath, { force: true });
 } finally {
   await rm(workDir, { recursive: true, force: true });
 }

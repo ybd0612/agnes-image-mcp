@@ -12,9 +12,12 @@ try {
   await client.connect(transport);
   const response = await client.listTools();
   const names = response.tools.map((tool) => tool.name);
-  const expected = ['generate_image', 'generate_images', 'download_image', 'validate_image'];
+  const expected = ['generate_images'];
   const missing = expected.filter((name) => !names.includes(name));
-  if (missing.length > 0) throw new Error(`Missing tools: ${missing.join(', ')}`);
+  const unexpected = names.filter((name) => !expected.includes(name));
+  if (missing.length > 0 || unexpected.length > 0) {
+    throw new Error(`Tool contract mismatch; missing=${missing.join(', ') || 'none'}, unexpected=${unexpected.join(', ') || 'none'}`);
+  }
   console.log(`stdio smoke test passed (${names.length} tools)`);
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error));
