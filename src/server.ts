@@ -34,7 +34,7 @@ export function createServer() {
 
   server.registerTool('generate_images', {
     title: '生成图片并保存',
-    description: '使用免费 Agnes default 用户组生成一张或多张图片。传入一个或多个 items；服务会按免费版 RPM 串行限流，自动下载并校验到当前工作目录。',
+    description: '使用 Agnes 免费 default 用户组生成一张或多张图片。传入一个或多个 items；服务会按免费版 RPM 串行限流，自动下载并校验到当前工作目录。item.model 是模型名，不是用户组名；省略 model 使用 AGNES_MODEL 或默认模型 agnes-image-2.5-flash，传入 default 会按同样规则处理。',
     inputSchema: generateImagesSchema,
     outputSchema: envelopeSchema,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: true },

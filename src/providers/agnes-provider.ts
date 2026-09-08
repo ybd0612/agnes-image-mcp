@@ -34,7 +34,8 @@ async function readLimitedResponse(response: Response, maxBytes: number): Promis
 export class AgnesProvider implements ImageProvider {
   constructor(private readonly config: ReturnType<typeof getConfig> & { endpoint?: string } = getConfig(), private readonly fetchImpl: typeof fetch = fetch, private readonly timeoutMs = 120000, private readonly maxResponseBytes = MAX_RESPONSE_BYTES) {}
   async generate(request: GenerationRequest): Promise<GenerationData> {
-    const model = request.model || this.config.model || DEFAULT_MODEL;
+    const requestedModel = request.model?.trim();
+    const model = !requestedModel || requestedModel === 'default' ? (this.config.model || DEFAULT_MODEL) : requestedModel;
     const extra: Record<string, unknown> = {};
     if (request.images?.length) extra.image = request.images;
     const format = request.output || 'url';

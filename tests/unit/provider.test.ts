@@ -15,6 +15,19 @@ describe('AgnesProvider', () => {
     expect(result).toMatchObject({ url: 'https://cdn.example/cat.png', base64: null, revisedPrompt: null });
   });
 
+  it('maps the default user-group label to the configured model', async () => {
+    const fetchMock = vi.fn<typeof fetch>(async (_url, init) => {
+      const body = JSON.parse(String(init?.body));
+      expect(body.model).toBe('configured-model');
+      return new Response(JSON.stringify({ data: [{ url: 'https://cdn.example/cat.png' }] }), { status: 200 });
+    });
+    const provider = new AgnesProvider({ apiKey: 'fake-key', model: 'configured-model', endpoint: 'https://mock.example/generate' }, fetchMock);
+
+    const result = await provider.generate({ prompt: 'a cat', size: '1K', model: 'default', output: 'url' });
+
+    expect(result.model).toBe('configured-model');
+  });
+
   it('maps text-to-image base64 output to return_base64', async () => {
     const fetchMock = vi.fn<typeof fetch>(async (_url, init) => {
       const body = JSON.parse(String(init?.body));

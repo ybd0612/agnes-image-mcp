@@ -9,6 +9,11 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased]
 
+## [0.1.10] - 2026-09-08
+
+- 将用户组标识 `default` 作为兼容别名映射到配置模型，避免把它作为实际模型名发送给 Agnes。
+- 明确 MCP schema、工具描述和 README 中“用户组”与“模型名”的区别。
+
 ## [0.1.7] - 2026-09-02
 
 - Published `agnes-image-mcp@0.1.7` to npm.

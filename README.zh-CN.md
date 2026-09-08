@@ -21,10 +21,10 @@ $env:AGNES_API_KEY = "你的密钥"
 npx --yes agnes-image-mcp@latest
 ```
 
-当前稳定版本为 `0.1.9`。需要可复现部署时，可固定已发布版本：
+当前稳定版本为 `0.1.10`。需要可复现部署时，可固定已发布版本：
 
 ```bash
-AGNES_API_KEY=你的密钥 npx --yes agnes-image-mcp@0.1.9
+AGNES_API_KEY=你的密钥 npx --yes agnes-image-mcp@0.1.10
 ```
 
 这是 MCP **stdio** 服务，不会监听 HTTP 端口；只有客户端实际调用 MCP 工具时，才会发起远程图片请求。
@@ -74,7 +74,7 @@ npm install --global agnes-image-mcp@latest
 
 ### `generate_images`
 
-传入 `items` 数组：一个 item 表示单张生成，多个 item 表示批量生成，最多 10 项。每项只有 `prompt` 必填，`size` 默认 `1K`，`ratio` 默认 `1:1`，`model` 默认使用 `AGNES_MODEL` 或 `agnes-image-2.5-flash`；图生图时可传 `images`。
+传入 `items` 数组：一个 item 表示单张生成，多个 item 表示批量生成，最多 10 项。每项只有 `prompt` 必填，`size` 默认 `1K`，`ratio` 默认 `1:1`，`model` 默认使用 `AGNES_MODEL` 或 `agnes-image-2.5-flash`。用户组标识 `default` 仅作为兼容别名处理，不是实际模型名；图生图时可传 `images`。
 
 服务会按免费版 `default` 实际 RPM 串行执行：`1K=20 RPM`、`2K=10 RPM`、`3K=1 RPM`、`4K=1 RPM`。生成后自动将 HTTPS 图片下载到当前工作目录的 `output/`，并校验响应 MIME、图片魔数和大小，成功后返回本地路径、格式、字节数和 SHA-256。默认遇错停止，可传 `continueOnError=true` 继续处理剩余任务。
 

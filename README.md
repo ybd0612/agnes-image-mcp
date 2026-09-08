@@ -24,7 +24,7 @@ AGNES_API_KEY=your-key npx --yes agnes-image-mcp@latest
 For reproducible deployments, pin the version explicitly:
 
 ```bash
-AGNES_API_KEY=your-key npx --yes agnes-image-mcp@0.1.9
+AGNES_API_KEY=your-key npx --yes agnes-image-mcp@0.1.10
 ```
 
 The package is an MCP **stdio** server. It does not open an HTTP listener and does not make an API request until an MCP tool is called.
@@ -69,7 +69,7 @@ Bash (Linux/macOS, current shell only):
 ```bash
 export AGNES_API_KEY='your-key'
 export AGNES_MODEL='agnes-image-2.5-flash' # optional
-npx --yes agnes-image-mcp@0.1.9
+npx --yes agnes-image-mcp@0.1.10
 ```
 
 PowerShell (Windows, current session only):
@@ -77,7 +77,7 @@ PowerShell (Windows, current session only):
 ```powershell
 $env:AGNES_API_KEY = 'your-key'
 $env:AGNES_MODEL = 'agnes-image-2.5-flash' # optional
-npx --yes agnes-image-mcp@0.1.9
+npx --yes agnes-image-mcp@0.1.10
 ```
 
 ## Available tools
@@ -86,7 +86,7 @@ Version 1 exposes one tool for Agnes free-tier (`default`) users. All calls retu
 
 ### `generate_images`
 
-Pass an `items` array: one item generates one image, multiple items run as a batch, with up to 10 items. Only `prompt` is required per item. `size` defaults to `1K`, `ratio` defaults to `1:1`, and `model` defaults to `AGNES_MODEL` or `agnes-image-2.5-flash`. Use `images` for image-to-image or multi-image composition.
+Pass an `items` array: one item generates one image, multiple items run as a batch, with up to 10 items. Only `prompt` is required per item. `size` defaults to `1K`, `ratio` defaults to `1:1`, and `model` defaults to `AGNES_MODEL` or `agnes-image-2.5-flash`. The `default` user-group label is accepted as a compatibility alias for the configured model; it is not an actual model name. Use `images` for image-to-image or multi-image composition.
 
 The server runs the free-tier `default` actual RPM limits serially: `1K=20 RPM`, `2K=10 RPM`, `3K=1 RPM`, and `4K=1 RPM`. Each generated HTTPS result is downloaded into `output/` under the current working directory, then checked for response MIME type, image magic bytes, and size before the final result is reported. `continueOnError` defaults to `false`.
 
